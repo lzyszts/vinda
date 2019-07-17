@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+	<link rel="stylesheet" href="{$smarty.const.SMARTY_CSS_URL}/bootstrap.min.css">  
+	<script src="{$smarty.const.SMARTY_JS_URL}/jquery.min.js"></script>
+	<script type="text/javascript" src="{$smarty.const.SMARTY_JS_URL}/bootstrap.min.js"></script>
+	<style>
+		*{
+		font-family: "微软雅黑";
+		font-size: 17px;
+	}
+	.out-div{
+		margin:0 auto;
+		min-width:1000px;
+		width:95%;
+	}
+	.tr_title td{
+		text-align:center;
+		font-size:25px;
+	}
+	.zd{
+		color:red;
+	}
+	.td_kehujiazhi{
+		color:#0070c0;
+	}
+	.notice{
+		font-size: 18px;
+		color:red;
+	}	
+	.write{
+		height: 30px;
+		width: 200px;
+		font-size:18px;
+		border: 1px solid #CCCCCC;
+		color: #333333;
+		cursor: pointer;
+		text-align: center;
+		background: url({$smarty.const.SMARTY_IMG_URL}/btn.gif) 0px -1096px;
+	}
+	.write:hover{
+		cursor: pointer;
+		background: url({$smarty.const.SMARTY_IMG_URL}/btn.gif) repeat-x 0px -2168px;
+	}
+	</style>
+</head>
+<div class="out-div">
+	<div class="container-fluid">
+	<table class="table table-striped table-bordered table-hover">
+	<tr class="tr_title">
+		<td  colspan='8'>
+			质询会月计划表
+		</td>
+	</tr>
+	<tr class="tr_info">
+			<td colspan="2">
+				序号：{$data['number']}
+			</td>
+			<td>
+				计划周期：{$data['starttime']}&nbsp;至&nbsp;{$data['endtime']}
+			</td>
+			<td>	
+				填表人：{$data['name']}
+			</td>
+			<td colspan="4">
+				填表日期：{$data['writetime']}
+			</td>
+		</tr>
+	<tr>
+		<th>序号</th>
+		<th>业务模块</th>
+		<th>二级模块</th>
+		<th>结果定义</th>
+		<th>时间</th>
+		<th>措施</th>
+		<th>自罚承诺</th>
+		<th>备注</th>
+	</tr>
+	{*下标1开循环8次  *}
+	{section loop=$data name='key' start='1' max=$line}
+	<tr>
+		{*如果是客户价值并且不是重点则蓝色*}
+		{if $data['ywmodel'][key]=="客户价值" && $data['zd'][key]=="否"} 
+		<td class="td_kehujiazhi">{$data['xuhao'][key]}</td>
+		<td class="td_kehujiazhi">{$data['ywmodel'][key]}</td>
+		<td class="td_kehujiazhi">{$data['ejmodel'][key]}</td>
+		<td class="td_kehujiazhi">{$data['result'][key]}</td>
+		<td class="td_kehujiazhi">{$data['statustime'][key]}</td>
+		<td class="td_kehujiazhi">{$data['status'][key]}</td>
+		<td class="td_kehujiazhi">{$data['sf'][key]}</td>
+		<td class="td_kehujiazhi">{$data['remark'][key]}</td>
+		{*如果是重点则红色*}
+		{elseif $data['zd'][key]=="是"}
+		<td class="zd">{$data['xuhao'][key]}</td>
+		<td class="zd">{$data['ywmodel'][key]}</td>		
+		<td class="zd">{$data['ejmodel'][key]}</td>
+		<td class="zd">{$data['result'][key]}</td>
+		<td class="zd">{$data['statustime'][key]}</td>
+		<td class="zd">{$data['status'][key]}</td>
+		<td class="zd">{$data['sf'][key]}</td>
+		<td class="zd">{$data['remark'][key]}</td>
+		{else}
+		<td>{$data['xuhao'][key]}</td>
+		<td>{$data['ywmodel'][key]}</td>
+		<td>{$data['ejmodel'][key]}</td>
+		<td>{$data['result'][key]}</td>
+		<td>{$data['statustime'][key]}</td>
+		<td>{$data['status'][key]}</td>
+		<td>{$data['sf'][key]}</td>
+		<td>{$data['remark'][key]}</td>
+		{/if}
+	</tr>
+	{/section}
+</table>
+
+<br>
+<br>
+
+<!--汇报表-->
+<table class="table table-striped table-bordered table-hover">
+	<tr class="tr_title">
+		<td  colspan='10'>
+			质询会月汇报表
+		</td>
+	</tr>
+	<tr class="tr_info">
+		{if $datahb==null}
+		<td colspan="2">
+				序号：{$data['number']}
+			</td>
+			<td>
+				计划周期：{$data['starttime']}&nbsp;至&nbsp;{$data['endtime']}
+			</td>
+			<td>	
+				填表人：{$data['name']}
+			</td>
+			<td colspan="6">
+				填表日期：{$data['writetime']}
+			</td>
+		{else}
+		<td colspan="2">
+				序号：{$datahb['number']}
+			</td>
+			<td>
+				计划周期：{$datahb['starttime']}&nbsp;至&nbsp;{$data['endtime']}
+			</td>
+			<td>	
+				填表人：{$datahb['name']}
+			</td>
+			<td colspan="6">
+				填表日期：{$datahb['writetime']}
+			</td>
+		{/if}		
+	</tr>
+	<tr>
+		<th>序号</th>
+		<th>业务模块</th>
+		<th>二级模块</th>
+		<th>结果定义</th>
+		<th>过程</th>
+		<th>状态</th>
+		<th>完成情况</th>
+		<th>未完成原因</th>
+		<th>解决措施</th>
+		<th>备注</th>
+	</tr>
+	{if $datahb==null}
+	<tr>
+		<td colspan="10" style="text-align:center;">
+			<font class="notice">还未填写汇报表！</font>
+		</td>
+	</tr>
+	{else}
+		{section loop=$datahb name='key' start='1' max=$line}
+		<tr bgcolor='white'>
+			{*如果是客户价值并且不是重点则蓝色*}
+			{if $datahb['ywmodel'][key]=="客户价值" && $datahb['zd'][key]=="否"} 
+			<td class="td_kehujiazhi">{$datahb['xuhao'][key]}</td>
+			<td class="td_kehujiazhi">{$datahb['ywmodel'][key]}</td>
+			<td class="td_kehujiazhi">{$datahb['ejmodel'][key]}</td>
+			<td class="td_kehujiazhi">{$datahb['result'][key]}</td>
+			<td class="td_kehujiazhi">{$datahb['statustime'][key]}</td>
+			<td class="td_kehujiazhi">{$datahb['status'][key]}</td>
+			<td class="td_kehujiazhi">{$datahb['jieguo'][key]}</td>
+			<td class="td_kehujiazhi">{$datahb['yuanyin'][key]}</td>
+			<td class="td_kehujiazhi">{$datahb['cuoshi'][key]}</td>
+			<td class="td_kehujiazhi">{$data['remark'][key]}</td>
+			{*如果是重点则红色*}
+			{elseif $datahb['zd'][key]=="是"}
+			<td class="zd">{$datahb['xuhao'][key]}</td>
+			<td class="zd">{$datahb['ywmodel'][key]}</td>		
+			<td class="zd">{$datahb['ejmodel'][key]}</td>
+			<td class="zd">{$datahb['result'][key]}</td>
+			<td class="zd">{$datahb['statustime'][key]}</td>
+			<td class="zd">{$datahb['status'][key]}</td>
+			<td class="zd">{$datahb['jieguo'][key]}</td>
+			<td class="zd">{$datahb['yuanyin'][key]}</td>
+			<td class="zd">{$datahb['cuoshi'][key]}</td>
+			<td class="zd">{$data['remark'][key]}</td>
+			{else}
+			<td>{$datahb['xuhao'][key]}</td>
+			<td>{$datahb['ywmodel'][key]}</td>		
+			<td>{$datahb['ejmodel'][key]}</td>
+			<td>{$datahb['result'][key]}</td>
+			<td>{$datahb['statustime'][key]}</td>
+			<td>{$datahb['status'][key]}</td>
+			<td>{$datahb['jieguo'][key]}</td>
+			<td>{$datahb['yuanyin'][key]}</td>
+			<td>{$datahb['cuoshi'][key]}</td>
+			<td>{$data['remark'][key]}</td>
+			{/if}
+		</tr>
+		{/section}
+	{/if}
+	</table>
+	<br>
+	<br>
+	<br>
+	</div>
+</div>
+<script src="{$smarty.const.SMARTY_JS_URL}/zxh_public.js"></script>
+<script type="text/javascript">
+	
+	/*
+	 * 填写汇报表
+	 */	
+	$('.write').mousedown(function(){
+		$('.write').addClass('clicksave');
+	});	
+	$('.write').mouseup(function(){
+		$('.write').removeClass('clicksave');
+		location.href="{$smarty.const.__CONTROLLER__}/monthhb/id/{$id}";
+	});	
+</script>
+
+
+</html>
+
+

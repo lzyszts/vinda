@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <link rel="icon" href="<?php echo DATA_IMG_URL;?>/vinda.ico">
+    <link rel="stylesheet" type="text/css" href="<?php echo DATA_JS_URL;?>/layui/css/layui.css" />
+    <script type="text/javascript" src="<?php echo DATA_JS_URL;?>/layui/layui.js"></script>
+    <script type="text/javascript" src="<?php echo DATA_JS_URL;?>/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="<?php echo DATA_JS_URL;?>/jQuery.print.js"></script>
+    <title>班产报表</title>
+<style>
+.layui-table{
+  text-align: center;
+}
+.layui-table-header th{
+  text-align: center;
+}
+#condition{
+  margin-top: 30px;
+}
+a{
+  color:#0014ff ;
+}
+</style>
+</head>
+<body class="fadeIn">
+<div class="layui-tab layui-tab-brief">
+    <include file="Public/nav" /> 
+    <form class="layui-form" id="condition">
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">时间段：</label>
+                <div class="layui-input-inline" style="width: 150px;">
+                    <input type="text" class="layui-input" id="date_start" name="date_start" lay-verify="required">
+                </div>
+                <div class="layui-form-mid">-</div>
+                <div class="layui-input-inline" style="width: 150px;">
+                    <input type="text" class="layui-input" id="date_end" name="date_end" lay-verify="required">
+                </div>
+                <div class="layui-input-inline" style="width: 150px;">
+                    <button class="layui-btn" id="export">导出</button>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+              <label class="layui-form-label">操作：</label>
+              <div class="layui-inline">
+                  <button class="layui-btn" type="button" id="wg_num" lay-filter="wg_num">插入完工单号</button>
+              </div>
+            </div>
+         </div>
+    </form>
+	  <div class="layui-tab-content">
+	    <div class="layui-tab-item layui-show" id="add">
+        <table id="mydata" lay-filter="mydata"></table> 
+      </div>
+	  </div>
+</div> 
+
+</body>
+<script type="text/html" id="bar">
+  <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit" lay-filter="edit">修改</a>
+  <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="del" lay-filter="del">删除</a>
+  <a class="layui-btn layui-btn-gray layui-btn-xs" lay-event="print" lay-filter="print">打印</a>
+</script>
+<script type="text/html" id="is_lock">
+  {{#  if(d.is_lock == '1'){ }}
+  <span style="color: #dc5236;">已锁定</span>
+  {{#  } }}
+</script>
+<script>
+//选项卡、表单
+layui.use(['element','form','laydate'], function(){
+  var element = layui.element,form=layui.form,laydate=layui.laydate;
+   laydate.render({
+      elem: '#date_start',
+      value:new Date()
+    });
+    laydate.render({
+      elem: '#date_end',
+      value:new Date()
+    });
+
+});
+
+
+
+//表格
+var cols=[[ //表头
+    {type:'checkbox'},
+    {title:'序号',type:'numbers'},
+    {field: 'is_lock', title: '状态', width:80,templet: '#is_lock', unresize: true},
+    {field:'id', title:'操作', width:200, toolbar: '#bar'},
+    {field: 'name', title: '姓名', width:100},
+    {field: 'sc_num', title: '生产批号', width:120},
+    {field: 'wg_num', title: '完工单号', width:100},
+    {field: 'zhou_num', title: '原纸张轴号', width:150},
+    {field: 'date', title: '日期', width:120},
+    {field: 'up_date', title: '下纸时间', width:120},
+    {field: 'cp_class', title: '产品种类', width:285},
+    {field: 'cp_num', title: '产品编码', width:120},
+    {field: 'zhouzhong', title: '轴重', width:120},
+    {field: 'dingliang', title: '定量(g/m3)', width:120},
+    {field: 'jt_num', title: '机台编号', width:90},
+    {field: 'banci', title: '班次', width:70},
+    {field: 'banzu', title: '班组', width:70},
+    {field: 'speed', title: '车速(m/min)', width:120}, 
+    {field: 'guige', title: '规格', width:120},
+    {field: 'juanchang', title: '卷长', width:120},
+    {field: 'maozhong', title: '毛重(kg)', width:120},
+    {field: 'jingzhong', title: '净重(KG)', width:120},
+    {field: 'buhege', title: '不合格重量(KG)', width:120},
+    {field: 'zhijing', title: '直径(mm)', width:100},
+    {field: 'is_hg', title: '是否合格', width:100},
+    {field: 'is_hd', title: '换刀情况', width:100},
+    {field: 'is_dt', title: '断头情况', width:100},
+    {field: 'zz_level', title: '皱纹级别', width:100},
+    {field: 'next', title: '下道工序', width:100},
+    {field: 'bz', title: '备注', width:150},
+  ]];
+
+  layui.use('table',function(){
+    table = layui.table;
+    //初始化
+    table.render({
+      elem: '#mydata',
+      height: 500,
+      url: '<?php echo U("mydata");?>',
+      page: true, //开启分页
+      request: {
+        limitName: 'pagesize' //每页数据量的参数名
+      },
+      limit:30,       
+      cols: cols
+    });
+    //事件
+    table.on('tool(mydata)' ,function(obj){
+      var dataId=obj.data.id;
+      switch(obj.event){
+        case 'print':
+          //iframe窗
+          layer.open({
+            type: 2,
+            title: '表单打印',
+            shadeClose: true,
+            shade: false,
+            maxmin: true, //开启最大化最小化按钮
+            area: ['100%', '100%'],
+            content: "<?php echo U('pri');?>"+"/id/"+dataId,
+          });
+        break;
+        case 'del':
+          if(obj.data.is_lock==1)
+          {
+            layer.alert("数据已锁定，请联系管理员解锁",{icon:2});
+          }else{
+              layer.confirm('删除后无法恢复是否确定？', function(){
+                $.post("<?php echo U('del')?>",{'id':dataId},function(res){
+                  if(res==1)
+                  {
+                    layer.msg('删除成功', { icon: 1,time: 1000}, function(){
+                      obj.del();  
+                    }); 
+                  }else{
+                    layer.alert(res);
+                  }
+                });
+              }, function(){
+                  layer.closeAll();
+              });
+          }
+        break;
+        case 'edit':
+            if(obj.data.is_lock==1)
+            {
+              layer.alert("数据已锁定，请联系管理员解锁",{icon:2});
+            }else{
+              location.href='<?php echo U("edit");?>/id/'+dataId;
+            }
+        break;
+      };
+    });
+  });
+
+//导出
+$("#export").click(function(){
+  var startDate=$("#date_start").val();
+  var endDate=$("#date_end").val();
+  if($.trim(startDate)=="" || $.trim(endDate)=="")
+  {
+      layer.alert("开始或结束时间段不能为空",{icon:2});
+      return false;
+  }
+  var msg="导出"+startDate+"到"+endDate+"数据吗？";
+  layer.confirm(msg, function(){
+       $.post("<?php echo U('export');?>",{'date_start':startDate,'date_end':endDate},function(res){
+         layer.closeAll();
+         var url="<?php echo SELF_URL;?>"+res.url;
+         layer.open({
+            type: 1,
+            skin: 'layui-layer-rim',
+            title:'下载地址',
+            area: ['300px', '150px'], //宽高
+            content: '<a href="'+url+'">'+res.filename+'</a>'
+          });
+       },'json').error(function(res){
+         layer.closeAll();
+       });
+    });
+    //阻止提交
+    return false;
+});
+
+//插入完工单号
+$("#wg_num").click(function(){
+  var checkStatus = table.checkStatus('mydata');
+  var data=checkStatus.data;
+  var l=data.length;//勾选条数
+  if(l==0)
+  {
+      layer.alert("未勾选任何数据！",{icon:2});
+      return false;
+  }
+  var msg="勾选了<font color='red'>"+l+"</font>条数据,是否确认";
+  layer.confirm(msg, function(){
+      layer.closeAll();
+      layer.prompt({title: '输入需要批量插入的完工单号', formType: 0}, function(num, index){
+          var ids=[];
+          for(var i=0;i<l;i++)
+          {
+            ids.push(data[i]['id']);
+          }
+          $.post("<?php echo U('add_wg_num');?>",{"wg_num":num,"ids":ids},function(res){
+              if(res==1)
+              {
+                layer.msg('插入成功', {
+                  icon: 1,
+                  time: 1000
+                }, function(){
+                  layer.closeAll();
+                  table.reload('mydata');
+                });   
+              }else{
+                 layer.alert(res,{icon:2});
+              }
+          });
+      }); 
+  });
+
+
+
+});
+
+</script>
+</html>

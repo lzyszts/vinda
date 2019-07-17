@@ -1,0 +1,460 @@
+*{
+	margin:0;padding:0;font-size: 15px;border-radius:3px;
+}
+ul li{
+	list-style:none;
+	}
+ol{
+	list-style:none;
+	}
+td{
+	border: 0px solid gray;
+	}
+table{
+	margin-top:0px;
+}
+#out{
+	width:70%;
+	margin-left:20px;
+}
+#userinfo{
+	width:100%;
+	border: 1px solid #CCCCCC;
+}
+
+.head{
+	  background: url("../images/tb_bg.gif") repeat-x;
+	  color:#055A78;
+	  height:30px;
+	  padding-left: 5px;
+	  border-left: 1px solid #FFFFFF;
+	  border-bottom: 1px solid #BBBBBB;
+}
+/*主题的input框*/
+#userinfo .head_zt{
+	border: 1px solid #CCCCCC;
+	text-indent:4px;
+	width:1284px;
+	height:30px;
+}
+/*
+ * 基本信息的标题td
+ */
+#userinfo .jiben_title{
+	width: 75px;
+	height:45px;
+	text-align:right;
+}
+#userinfo .jiben_title_div{
+	float:right;
+	margin-right:15%;
+	width: 50px;
+	height:20px;
+}
+/*
+ * 基本信息标题后面的td
+ */
+#userinfo .jiben_content{
+	width: 150px;
+}
+/*
+ * 基本信息的input框
+ */
+#userinfo .jiben_content input{
+	border: 1px solid #CCCCCC;
+	text-indent:4px;
+	width: 150px;
+	height:30px;
+}
+#userinfo .jiben_readonly{
+	background:#dbdbdb;
+}
+/*按钮外面div*/
+#out .out_btn{
+float:left;
+	height:26px;
+}
+/*附件上传的外层div*/
+#out .jiben_upload{
+position:relative;
+	margin-left:20px;
+	float:left;
+	height:26px;
+	line-height:26px;
+	width:80px;
+    border: 1px solid #CCCCCC;
+    color: #333333;
+    cursor: pointer;
+    text-align: center;
+    background:url('../images/btn.gif') 0px -1096px;
+}
+/*附件上传按钮*/
+#out .upload{
+position:absolute;
+	left:0;
+	width:100px;
+	opacity:0;
+}
+/*附件上传显示框*/
+#out .jiben_filename{
+	height:100%;
+	width:300px;
+	margin-left:5px;
+	border:none;
+}
+
+/*提交按钮*/
+#out .jiben_submit{
+	margin-left:10px;
+	margin-top:-1px;
+	float:left;
+	height:29px;
+	width:80px;
+    border: 1px solid #CCCCCC;
+    color: #333333;
+    cursor: pointer;
+    text-align: center;
+    background:url('../images/btn.gif') 0px -1096px;
+}
+/*保存提交按钮hover*/
+#out .jiben_upload:hover{
+	cursor:pointer;
+	background: url("../images/btn.gif") repeat-x 0px -2168px;	
+}
+#out .jiben_submit:hover{
+	cursor:pointer;
+	background: url("../images/btn.gif") repeat-x 0px -2168px;
+}
+/*
+ * 头信息表格
+ */
+#plan{
+	width:100%;
+	border: 1px solid #CCCCCC;
+}
+/*
+ * 填写项目的td
+ */
+#plan .plan_select{
+	width:670px;
+	height:50px;
+	text-indent: 5px;
+}
+/*
+ * 包住内容表格的div
+ */
+.con_out{
+	border: 1px #ccc solid;
+	border-bottom:none;
+}
+/*
+ * 内容表格
+ */
+#content{
+	width:100%;
+	border: 1px solid #CCCCCC;
+	margin-top:10px;
+	border-top: none;
+	text-align: center;
+}
+#content input{
+	text-align:center;
+}
+/*
+ * 新增按钮
+ */
+#content .con_add{
+	background:transparent;
+	cursor:pointer;
+	border:#ccc;
+}
+/*
+ * 新增按钮前面的图标1
+ */
+#content .con_add_img1{
+	width:17px;
+	height:18px;
+	margin-top:2px;
+	display:block;
+	float:left;
+	background:url('../images/add.gif') no-repeat;
+}
+/*
+ * 新增按钮前面的图标2
+ */
+#content .con_add_img2{
+	background:url('../images/btn_del.gif') 0px 107px;
+	width:17px;
+	height:18px;
+	margin-top:2px;
+	display:block;
+	float:left;
+}
+/*
+ * 新增按钮前面的图标3
+ */
+#content .con_add_img3{
+	background:url('../images/upmove.png') 0px 1px;
+	width:17px;
+	height:18px;
+	margin-top:2px;
+	display:block;
+	float:left;
+}
+/*
+ * 删除按钮
+ */
+#content .con_del{
+	background:transparent;
+	cursor:pointer;
+	border:#ccc;
+}
+#content .con_add div{
+	background:url('../images/add.gif');
+	line-height: 16px;
+	height: 16px;
+}
+/*
+ * 上移按钮
+ */
+#content .con_moveup{
+	background:transparent;
+	cursor:pointer;
+	border:#ccc;
+}
+
+/*
+ * content下面的tbody
+ */
+#con td{
+	color: #055A78;
+	height:30px;
+	line-height:30px;
+	border-right:1px #CCCCCC solid;
+}
+/*
+ * content下面的标题
+ */
+#con .con_tr1{
+	height:30px;
+	background:url('../images/gray_bg.gif') repeat-x;
+}
+
+/*
+ * 序号栏
+ */
+#con .con_tr2 .xuhao{
+	border:1px solid white;
+	background:white;
+	width:40px;
+}
+#con .con_tr2 td{
+	border: 1px #ccc solid;
+	border-top:none;
+}
+/*
+ * 鼠标移动到新增div上的时候
+ */
+#content .head div:hover{
+	cursor:pointer;
+	background: url("../images/tb_bg.gif") repeat-x;
+}
+.clickhover{
+	background:url('../images/btn.gif') repeat-x 0px -3240px !important;
+}
+.clicksave{
+	background:url('../images/btn.gif') repeat-x 0px -3240px !important;
+}
+
+.focusclass{
+	border:1px blue solid !important;
+	background:#E2F7FF;
+}
+.blurclass{
+	border: 1px solid #ccc;
+	background:#fff9c2;
+}
+.warningclass{
+	border: 1px solid #CCCCCC;
+	background:#ffb9ac;
+}
+/*
+ * 过程的div和input
+ */
+#con .{
+	height:30px;
+	position:relative;
+}
+#con .con_status div{
+	cursor:pointer;
+	width:16px;
+	height:16px;
+	background:url('../images/itembar.gif');
+	position:absolute;
+	right:4px;
+	top:6px;
+}
+#con .con_status input{
+	position:absolute;
+	border-radius:0px;
+	cursor: pointer;
+	left:2px;
+	top:1px;
+	border:1px #ccc solid;
+	height:26px;
+	width:95%;
+}
+/*
+ * 时间下面的div和input
+ */
+#con .con_time{
+	height:30px;
+	position:relative;
+}
+#con .con_time input{
+	position:absolute;
+	border:none;
+	border-radius:0px;
+	cursor: pointer;
+	left:2px;
+	top:1px;
+	border:1px #ccc solid;
+	height:26px;
+	width:95%;
+}
+/*
+ * 业务模块下面的div和input
+ */
+#con .con_model{
+	height:30px;
+	position:relative;
+}
+#con .con_model input{
+	position:absolute;
+	border-radius:0px;
+	cursor: pointer;
+	left:0px;
+	top:0px;
+	border:none;
+	height:28px;
+	width:96%;
+}
+/*
+ * 业务模块的下拉div
+ */
+#con .con_model1{
+	display:none;
+	background:white;
+	border-radius:0px;
+	cursor:pointer;
+	height:200px;
+	width:95%;
+	border:1px #ccc solid;
+	position:absolute;
+	left:0px;
+	top:30px;
+	z-index: 999;
+}
+#con .con_model1 ul li{
+	border-radius:0px;
+	cursor: pointer;
+	height:25px;
+	width:100%;
+}
+/*
+ * 时间的下拉div
+ */
+#con .con_time1{
+	display:none;
+	background:white;
+	border-radius:0px;
+	cursor:pointer;
+	height:175px;
+	width:95%;
+	border:1px #ccc solid;
+	position:absolute;
+	left:2px;
+	top:30px;
+	z-index: 999;
+}
+#con .con_time1 ul li{
+	border-radius:0px;
+	cursor: pointer;
+	height:25px;
+	width:100%;
+}
+/*
+ * 完成状态下拉div
+ */
+#con .con_status1{
+	display:none;
+	background:white;
+	border-radius:0px;
+	cursor:pointer;
+	width:95%;
+	border:1px #ccc solid;
+	position:absolute;
+	left:3px;
+	top:30px;
+	z-index: 999;
+}
+#con .con_status1 ul li{
+	border-radius:0px;
+	cursor: pointer;
+	width:100%;
+}
+/*
+ * 业务模块，结果，备注input框
+ */
+#con .con_ejmk{
+	text-align:left;
+	text-indent:4px;
+	height:26px;
+	width:100%;
+}
+#con .con_jgdy{
+	text-align:left;
+	text-indent:4px;
+	height:26px;
+	width:100%;
+}
+#con .con_bz{
+	text-align:left;
+	text-indent:4px;
+	height:26px;
+	width:100%;
+}
+#con .con_zfcn{
+	border:1px #ccc solid;
+	height:27px;
+	width:100%;
+	min-width:66px;
+}
+#con .con_bz{
+	text-align:left;
+	text-indent:4px;
+	height:25px;
+	width:100%;
+}
+#con .con_yy{
+	text-align: left;
+	height:23px;
+	width: 98%;
+	text-indent: 4px;
+}
+#con .con_cs{
+	text-align: left;
+	height:23px;
+	width: 98%;
+	text-indent: 4px;
+}
+.hide{
+	display:none;
+}
+.readonly{
+	border:1px #ccc solid;
+	background:#dbdbdb;
+}
+.zd{
+	color: red;
+}

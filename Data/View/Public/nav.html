@@ -1,0 +1,11 @@
+<ul class="layui-tab-title">
+    <li <?php if(ACTION_NAME=='add') echo 'class="layui-this"';?> >提交表单</li>
+    <li <?php if(ACTION_NAME=='mylist') echo 'class="layui-this"';?> >我的表单</li>
+    <li <?php if(ACTION_NAME=='alllist') echo 'class="layui-this"';?> >所有表单</li>
+</ul>
+<script type="text/javascript">
+	$('.layui-tab-title li').click(function(){
+		var arr=['add','mylist','alllist'];
+		window.location.href=arr[$(this).index()];
+	});
+</script>

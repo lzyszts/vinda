@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+    <title>时间选择</title>
+	<link rel="stylesheet" href="{$smarty.const.SMARTY_CSS_URL}/bootstrap.min.css">
+	<style>
+	*{
+		font-family: "微软雅黑";
+	}
+	body{
+		background:url({$smarty.const.ADMIN_IMG_URL}/login_bg.gif) repeat-x;
+		width: 100%;
+		height: 100%;
+	}
+	/*登录框整体*/
+	.login_div{
+		width:470px;
+		height:300px;
+		margin:0 auto;
+	}
+	/*登录框头*/
+	.login_head{
+		color:white;
+		background:#006DCC;
+	}
+	.login_body{
+		padding:20px 0;
+	}
+	.login_body label{
+		line-height:34px;
+		width:10%;
+	}
+	.login_body select{
+		width:85% !important;
+		padding:0;
+	}
+	
+	.lzy {
+		padding-left:4px;
+		padding-right:4px;
+
+	}
+	.login_btn{
+		margin-right:45%;
+	}
+	.error_div{
+		text-align:center;
+		position:relative;
+		margin-bottom:0;
+		z-index:1051;
+	}
+
+	</style>
+</head>
+<body style="border-top:1px #1c94c4 solid">
+	<div class="modal show" id="myModal" data-backdrop="static">
+		<div class="modal-dialog sm-lg login_div">
+			<div class="modal-content">
+				<!--上-->
+				<div class="modal-header login_head">
+					<h4 class="modal-title">请先选择时间</h4>
+				</div>	
+				<!--中-->			
+				<div class="modal-body login_body">
+					<form action="{$smarty.const.__APP__}/SMARTY/User/check" method="post">
+						<div class="container-fluid">
+							<div class="row"> 
+								<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 form-inline lzy">
+									<label>年:</label>
+									<select class="form-control year">
+									</select>
+								</div>
+								<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 form-inline lzy">
+									<label>月:</label>
+									<select class="form-control month">
+									</select>
+								</div>				
+							</div>				
+						</div>				
+					</form>
+				</div>
+				<!--下-->
+				<div class="modal-footer">
+					<button class="btn btn-primary login_btn" id="create_weekplan">生成表单</button>
+				</div>
+				
+				<!--错误框-->
+				<div class="alert alert-danger error_div">
+					<span class="error_info"></span>
+					<button type="button" class="close"> 
+						<span>&times;</span>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+</body>
+</html>
+<script src="{$smarty.const.SMARTY_JS_URL}/jquery.min.js"></script>
+<script src="{$smarty.const.SMARTY_JS_URL}/bootstrap.min.js"></script>
+<script src="{$smarty.const.SMARTY_JS_URL}/zxh_public.js"></script>
+<script>
+	$().ready(function(){
+		keep();
+		date();
+		$('.error_div').hide();
+	});	
+	/*
+	 * 保持窗口
+	 */
+	$(window).resize(keep);
+	function keep(){
+		var body_height=$('#myModal').height();
+		var login_height=$('.login_div').height();
+		var new_margin_top=(body_height-login_height)/2;
+		$('.login_div').css('margin-top',new_margin_top);
+	}
+	
+	
+	/*
+	 * 服务器返回时间
+	 */
+	function date(){
+		var url="{$smarty.const.__CONTROLLER__}/date";
+		$.post(url,{ "1":"1" },function(msg){
+			var arr_month=msg.arr_month;
+			for(var i=1;i<arr_month.length;i++){
+				var newop=new Option(arr_month[i],i);
+				if(i==msg.now_month){
+					newop.selected="selected";
+				}
+				$('.month')[0].options.add(newop);
+			}
+			var arr_year=msg.arr_year;
+			for(var i=2016;i<=2025;i++){
+				var newop=new Option(arr_year[i],i);
+				if(i==msg.now_year){
+					newop.selected="selected";
+				}
+				$('.year')[0].options.add(newop);
+			}
+		},'json');
+	}
+	
+	/*
+	 * 提交按钮
+	 */
+	$('#create_weekplan').click(function(){
+		var url="{$smarty.const.__CONTROLLER__}/check_monthplan";
+		var url_checkdate="{$smarty.const.__CONTROLLER__}/check_forbid/id/2";
+		var year=$('.year').val();
+		var month=$('.month').val();
+		//1、验证是否过了禁止填写日期
+		$.post(url_checkdate,{ "year":year,"month":month },function(msg){
+			if(msg=="false"){
+				var theme="错误 : 已过填写日期";
+				$('.error_div').fadeIn(200);
+				$('.error_info').text("");
+				$('.error_info').prepend(theme);
+				return false;
+			}else{
+				//2、如果没过填写日期则 验证是否已经填写
+				$.get(url,{ "year":year,"month":month },function(msg){
+					if(msg=="1"){
+						var theme="错误 : 质询会月计划表---"+month+"月已存在";
+						$('.error_div').fadeIn(200);
+						$('.error_info').text("");
+						$('.error_info').prepend(theme);
+					}//如果不存在则跳转
+					else{
+						location.href="{$smarty.const.__CONTROLLER__}/monthplan/year/"+year+"/month/"+month;
+					}
+				});		
+			}
+		});
+	});
+	$('.close').click(function(){
+		$('.error_div').fadeOut(200);
+	});
+	$('select').click(function(){
+		$('.error_div').fadeOut(200);
+	});
+	
+</script>
+
+
+
+
+

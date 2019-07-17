@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <link rel="icon" href="<?php echo DATA_IMG_URL;?>/vinda.ico">
+    <link rel="stylesheet" type="text/css" href="<?php echo DATA_JS_URL;?>/layui/css/layui.css" />
+    <script type="text/javascript" src="<?php echo DATA_JS_URL;?>/layui/layui.js"></script>
+    <script type="text/javascript" src="<?php echo DATA_JS_URL;?>/jquery-1.11.3.min.js"></script>
+    <title>数据维护</title>
+<style>
+.layui-table{
+  text-align: center;
+}
+.layui-table th{
+  text-align: center;
+}
+.container{
+    margin:0 auto;
+    margin-top:50px;
+    max-width: 700px;
+}
+.layui-form-item .layui-inline{
+  margin-bottom: 0;
+}
+.layui-form-item .layui-input-inline{
+    width: 325px;
+}
+
+.btn-link {
+    color: #0e90d2;
+    cursor: pointer;
+}
+
+</style>
+</head>
+<body class="fadeIn animated">
+<div class="layui-tab layui-tab-brief">
+    <include file="Public/backnav" /> 
+    <div class="container">
+        <!--产品种类-->
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <input type="text" name="type_name" autocomplete="off" class="layui-input" id="type_name" placeholder="产品名称">
+            </div>
+            <div class="layui-inline">
+                <input type="text" name="cp_num" autocomplete="off" class="layui-input" id="cp_num" placeholder="产品编码">
+            </div>
+            <button class="layui-btn type_add">增加</button>
+        </div>
+        <div class="layui-form">
+            <table class="layui-table">
+                <colgroup>
+                  <col>
+                  <col>
+                  <col width="150">
+                </colgroup>
+                <thead>
+                  <tr>
+                     <th>产品名称</th>
+                     <th>产品编码</th>
+                     <th>操作</th>
+                  </tr> 
+                </thead>
+                <tbody class="type_content">
+                  <?php foreach($data as $v):?>  
+                  <tr>
+                     <td><?php echo $v['type_name'];?></td>
+                     <td><?php echo $v['cp_num'];?></td>
+                     <td>
+                         <a href="javascript:;" class="ml-5 btn-link type_del" data-id="<?php echo $v['id'];?>">
+                            删除
+                         </a> 
+                     </td> 
+                  </tr>
+                  <?php endforeach;?>
+                </tbody>
+            </table>
+        </div>
+        <!--下道工序-->
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <input type="text" name="next" autocomplete="off" class="layui-input" id="next" placeholder="下道工序">
+            </div>
+            <button class="layui-btn next_add">增加</button>
+        </div>
+        <div class="layui-form">
+            <table class="layui-table">
+                <colgroup>
+                  <col>
+                  <col width="150">
+                </colgroup>
+                <thead>
+                  <tr>
+                     <th>下道工序</th>
+                     <th>操作</th>
+                  </tr> 
+                </thead>
+                <tbody class="next_content">
+                  <?php foreach($next_data as $v):?>  
+                  <tr>
+                     <td><?php echo $v['next_name'];?></td>
+                     <td>
+                         <a href="javascript:;" class="ml-5 btn-link next_del" data-id="<?php echo $v['id'];?>">
+                            删除
+                         </a> 
+                     </td> 
+                  </tr>
+                  <?php endforeach;?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+	 
+	
+</body>
+<script>
+  //选项卡、表单
+  layui.use(['element','form'], function(){
+    var element = layui.element,form=layui.form;
+  });
+  //产品种类添加
+  $(".type_add").click(function(){
+      var t=$("#type_name").val();
+      var n=$("#cp_num").val();
+      if(t=="")
+      {
+        layer.alert('产品名称不能为空!',{icon:2}); 
+      }else if(n=="")
+      {
+        layer.alert('产品编码不能为空!',{icon:2}); 
+      }else{
+        $.post("<?php echo U('type_add');?>",{type_name:t,cp_num:n},function(res){
+            if(res>0)
+            {
+                layer.msg('添加成功', {
+                  icon: 1,
+                  time: 1000
+                }, function(){
+                  var str='<tr><td>'+t+'</td><td>'+n+'</td><td><a href="javascript:;" class="ml-5 btn-link type_del" data-id="'+res+'">删除</a></td></tr>';
+                  $(".type_content").append(str);
+                });       
+
+            }else{
+                layer.alert(res, {icon: 5});
+            }
+        });
+      }
+  });
+  //产品种类删除
+  $(document).on("click", ".type_del", function() {
+    var id=$(this).attr("data-id");  
+    var _this=$(this);
+    layer.confirm('是否确定删除？', 
+    {
+      btn: ['确定','取消'],
+      title:'确认框',
+    }, function(){
+      $.post("<?php echo U('del');?>",{'id':id},function(res){
+        if(res==1)
+        {
+          layer.msg('删除成功', {
+                  icon: 1,
+                  time: 1000
+                }, function(){
+                   _this.parent().parent().remove();
+              }); 
+        }else{
+          layer.alert(res);
+        }
+      });
+    });
+  });
+
+  //下道工序添加
+  $(".next_add").click(function(){
+      var t=$("#next").val();
+      if(t=="")
+      {
+        layer.alert('下道工序不能为空!',{icon:2}); 
+      }else{
+        $.post("<?php echo U('next_add');?>",{next_name:t},function(res){
+            if(res>0)
+            {
+                layer.msg('添加成功', {
+                  icon: 1,
+                  time: 1000
+                }, function(){
+                  var str='<tr><td>'+t+'</td><td><a href="javascript:;" class="ml-5 btn-link next_del" data-id="'+res+'">删除</a></td></tr>';
+                  $(".next_content").append(str);
+                });       
+            }else{
+                layer.alert(res, {icon: 5});
+            }
+        });
+      }
+  });
+  //下道工序删除
+  $(document).on("click", ".next_del", function() {
+    var id=$(this).attr("data-id");  
+    var _this=$(this);
+    layer.confirm('是否确定删除？', 
+    {
+      btn: ['确定','取消'],
+      title:'确认框',
+    }, function(){
+      $.post("<?php echo U('next_del');?>",{'id':id},function(res){
+        if(res==1)
+        {
+          layer.msg('删除成功', {
+                  icon: 1,
+                  time: 1000
+                }, function(){
+                   _this.parent().parent().remove();
+              }); 
+        }else{
+          layer.alert(res);
+        }
+      });
+    });
+  });
+
+
+
+</script>
+</html>

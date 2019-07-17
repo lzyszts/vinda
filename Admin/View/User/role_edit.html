@@ -1,0 +1,98 @@
+<include file="Public/head" /> 
+<style>
+.clearfix:after{
+    content:'.';
+    display: block;
+    height:0;
+    line-height: 0;
+    visibility: hidden;
+    clear:both;
+}
+
+</style>
+</head>
+<body>
+    
+<article class="page-container">
+    <form action="" method="post" class="form form-horizontal" id="form-admin-role-edit">
+        <input type="hidden" value="<?php echo $user_id;?>" name="user_id">
+        <div class="row cl">
+            <div class="formControls">
+                <dl class="permission-list">
+                    <dt>
+                        <label>
+                            <input type="checkbox">
+                            角色列表
+                        </label>
+                    </dt>
+                    <dd class="clearfix">
+                        <?php foreach($role_list as $v):?>    
+                        <label class="col-xs-4 col-sm-2">
+                             <input type="checkbox" value="<?php echo $v['role_id'];?>" name="role_ids[]" <?php echo in_array($v['role_id'],$user_role_ids)?"checked":"";?>>
+                             <?php echo $v['role_name'];?>
+                        </label>
+                        <?php endforeach;?>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+        <div class="row cl">
+            <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+                <button type="button" class="btn btn-success radius" id="admin-role-save">
+                <i class="icon-ok"></i>确定</button>
+            </div>
+        </div>
+    </form>
+</article>
+
+<include file="Public/foot" /> 
+<script type="text/javascript">
+$(function(){
+	$(".permission-list dt input:checkbox").click(function(){
+		$(this).closest("dl").find("dd input:checkbox").prop("checked",$(this).prop("checked"));
+		if($(this).prop("checked"))
+		{
+		    $(this).parents(".permission-list").find(".level0").prop("checked",true);
+		}
+	});
+	$(".permission-list2 dd input:checkbox").click(function(){
+		var l =$(this).parent().parent().find("input:checked").length;
+		var l2=$(this).parents(".permission-list").find(".permission-list2 dd").find("input:checked").length;
+		if($(this).prop("checked")){
+			$(this).closest("dl").find("dt input:checkbox").prop("checked",true);
+			$(this).parents(".permission-list").find("dt").first().find("input:checkbox").prop("checked",true);
+		}
+		else{
+			if(l==0){
+				$(this).closest("dl").find("dt input:checkbox").prop("checked",false);
+			}
+			if(l2==0){
+				$(this).parents(".permission-list").find("dt").first().find("input:checkbox").prop("checked",false);
+			}
+		}
+	});
+	 
+    //确定
+	$("#admin-role-save").click(function(){
+        $.post("<?php echo U('role_edit');?>",$("#form-admin-role-edit").serialize(),function(res){
+            if(res=="1")
+            {
+                layer.msg('修改成功', {
+                  icon: 1,
+                  time: 1000
+                }, function(){
+                   window.parent.window.location.reload();  
+                });    
+            }else{
+                layer.alert(res, {icon: 5});
+            }
+        });     
+	});
+	
+	
+	
+	
+});
+</script>
+</body>
+</html>

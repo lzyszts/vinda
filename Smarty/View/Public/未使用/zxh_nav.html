@@ -1,0 +1,37 @@
+<style>
+	.table td{
+		text-align:center;
+		font-size: 15px;
+	}
+	.nav-div{
+		width:375px;
+		margin:3px auto;		
+	}
+</style>   
+<div class="nav-div">
+	<div class="container-fluid">
+		<ul id="nav" class="nav nav-pills">
+		  <li class="dropdown active">
+			<a href="#" data-toggle="dropdown">操作周报表<span class="caret"></span></a>
+			<ul class="dropdown-menu">
+				<li><a href="{$smarty.const.__MODULE__}/Rzb/weekplanlist">查看</a></li>
+				<li><a href="{$smarty.const.__MODULE__}/Rzb/weekplan_time">填写</a></li>
+			</ul>
+		  </li>
+		  <li class="dropdown">
+			<a href="#" data-toggle="dropdown">操作月报表<span class="caret"></span></a>
+			<ul class="dropdown-menu">
+				<li><a href="{$smarty.const.__MODULE__}/Rzb/monthplanlist">查看</a></li>
+				<li><a href="{$smarty.const.__MODULE__}/Rzb/monthplan_time">填写</a></li>
+			</ul>
+		  </li>
+		  <li class="dropdown">
+			<a href="#" data-toggle="dropdown">交流议题<span class="caret"></span></a>
+			<ul class="dropdown-menu">
+				<li><a href="{$smarty.const.__MODULE__}/Rzb/talklist">查看</a></li>
+				<li><a href="{$smarty.const.__MODULE__}/Rzb/talk_time">填写</a></li>
+			</ul>
+		  </li>
+		</ul>
+	</div>	
+</div>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<title>维达员工自助系统后台</title>
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+<link rel="stylesheet" href="<?php echo ADMIN_CSS_URL;?>/bootstrap.min.css">
+<script type="text/javascript" src="<?php echo ADMIN_JS_URL;?>/jquery.min.js"></script>
+<style type="text/css">
+	body{
+		height:99%;
+		height:100;
+		background:#F3F3F4;
+	}
+	.top-h2 {
+	    font-size: 30px;
+	    text-align: center;
+	    letter-spacing: 1px;
+	    color: #0059b2;
+	}
+	.top-p{
+		font-size: 18px;
+		text-align: center;
+		letter-spacing: 1px;
+		color: #999;
+	}
+	#footer {
+		  background: #F4FaFb;
+		  border: 1px solid #BBDDE5;
+		  padding: 10px;
+		  color: #9CACAF;
+		  width:100%;
+		  text-align: center;
+		  position:fixed;
+		  bottom:0;
+		}
+	.container{
+		margin-top:20px;
+	}
+	.table_info{
+		text-align: center;
+		vertical-align:middle;
+	}
+	.img-thumbnail{
+		margin-top: 10px;
+	}
+	.thumbnail{
+		box-shadow: 2px 2px 5px #888888;
+	}
+	.upload_div{
+		position:relative;
+		overflow: hidden;
+	}
+	.upload{
+		position:absolute;
+		display: block;
+		top:0;
+		width:100%;
+		height:100%;
+		opacity: 0;
+	}
+	.progress{
+		margin:2px 0;
+	}
+	#gg_add,.gg_del{
+		cursor:pointer;
+		float:right;
+		color:#006DCC;
+	}
+	#gg_add{
+		margin-right:5px;
+	}
+	.edit_body{
+		height:260px;
+	}
+	a{
+		cursor:pointer;
+		text-decoration:none !important;
+	}
+	.footer{
+
+		text-align: center;
+		vertical-align:middle;
+	}
+	.pagination{
+		margin:0;
+	}
+	.phone{
+		padding-right: 15px;
+		padding-left: 15px;
+	}
+	.img-rounded {
+	    border-radius: 20px;
+	}
+
+	/*滚动条*/
+	ul,li{ 
+		list-style:none;
+	}
+	li{
+		width:100%;
+		text-align: center;
+	}
+	.t_news{ 
+		margin:10px auto;
+		height:20px; 
+		width:80%; 
+		color:#006DCC; 
+		padding-left:10px; 
+		overflow:hidden; 
+		position:absolute; 
+		top:0;
+	}
+
+	.news_li,.swap{ 
+		font-size:16px;
+		line-height:20px; 
+		display:inline-block; 
+		position:absolute; 
+		top:0; 
+		left:72px;
+		width:100%;
+	 }
+	.swap{ 
+		top:20px; 
+		width:100%;
+	}
+</style>
+</head>
+<body>
+<div id="footer">&copy;ITDEPT-VINDA-信息科</div>
+<div class="container">
+	<div class="row">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<!--面板-->
+			<div class="panel">
+				<div class="panel-heading" style="position:relative;">
+					<span style="font-size: 16px">系统公告</span>
+					<span class="glyphicon glyphicon-menu-right text-warning"></span> 
+					
+					<div class="t_news">
+						<ul class="news_li">
+							<?php foreach($data as $key=>$value): ?>
+							<li data-id="<?php echo $value['id'];?>"><a><?php echo $value['content'];?>&nbsp;&nbsp;----<?php echo date("Y-m-d",$value['add_time']);?>&nbsp;&nbsp;</a></li>
+							<?php endforeach;?>
+						</ul>
+						<ul class="swap"></ul>
+					</div>	
+					<?php $gh=$userinfo['samaccountname'];
+					if($gh=="admin" ||$gh=="1"||$gh=="135000"):?>
+					<span class="gg_del">删除</span>
+					<span id="gg_add">添加</span>
+					<?php endif;?>			
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<img src="<?php echo ADMIN_IMG_URL;?>/phone.jpg?cache=<?php echo time();?>" alt="图片" class="img-responsive img-rounded phone">
+	</div> 
+</div>	
+<br>
+<br>
+<br>
+
+
+
+<!--编辑弹窗-->
+	<!-- 模态框声明 -->
+	<div class="modal fade" id="edit_form" data-backdrop="static">
+		<!-- 窗口声明 -->
+		<div class="modal-dialog sm-lg edit_body">
+			<!-- 内容声明 -->
+			<div class="modal-content">
+				<!--上-->
+				<div class="modal-header">
+					<button class="close" data-dismiss="modal"><span>&times;</span></button>
+					<h4 class="modal-title">添加公告</h4>
+				</div>	
+				<!--中-->	
+				<form>		
+				<div class="modal-body">
+			        <div class="container-fluid">
+				        <div class="form-group">
+				            <label for="content">内容</label>
+				            <textarea id="content_edit" class="form-control" name="content" rows="2" ></textarea>
+				        </div>
+				        <button type="submit" id="add_btn" class="btn btn-success">提交</button>
+					</div>    					
+				</div>
+				</form>
+				<!--下-->
+				<div class="modal-footer">		
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+<script src="<?php echo ADMIN_JS_URL;?>/bootstrap.min.js"></script>
+<script>
+
+/*
+ * 新增
+ */
+$('#gg_add').click(function(){
+	$('#edit_form').modal('show');	
+	keep_body();
+});
+/*
+ * 公告
+ */
+$('#add_btn').click(function(evt){
+	evt.preventDefault();
+	var url="<?php echo U('gg_add');?>";
+	var content=$('#content_edit').val();
+	$.post(url,{ 'content':content },function(msg){
+		 if(msg=="succeed"){
+		 	location.reload();
+		 }
+	});
+});
+
+//$(window).resize(keep_body);
+
+/*
+ * 删除
+ */
+$(".gg_del").click(function(){
+	var h=$(".news_li").css("top");
+	h=Math.abs(parseInt(h));
+	var index=h/20;
+	index==5?index=0:index=index;
+	//是整数
+	if(index%1===0)		
+	{
+		var id=$(".news_li li").eq(index).attr("data-id");
+		if(confirm("删除后无法恢复,确认删除吗？")){
+			var url="<?php echo U('gg_del');?>";
+			$.get(url,{ 'id':id },function(msg){
+				location.reload();
+			});	
+		}else{
+			return false;
+		}
+	}
+});
+	
+
+  
+  function b(){	
+	t = parseInt(x.css('top'));
+	y.css('top','20px');	
+	x.animate({ top: t - 20 + 'px' },'slow');	//20为每个li的高度
+	if(Math.abs(t) == h-20){ //20为每个li的高度
+		y.animate({ top:'0px' },'slow');
+		z=x;
+		x=y;
+		y=z;
+	}
+	setTimeout(b,7000);//滚动间隔时间
+	}
+	
+	$().ready(function(){
+		$('.swap').html($('.news_li').html());
+		x = $('.news_li');
+		y = $('.swap');
+		h = $('.news_li li').length * 20; //20为每个li的高度
+		setTimeout(b,7000);//滚动间隔时间
+		
+	});
+</script>

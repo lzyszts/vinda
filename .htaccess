@@ -1,0 +1,6 @@
+RewriteEngine on 
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f 
+RewriteRule ^(.*)$ index.php?s=$1 [QSA,PT,L]
+#文章系统 a/40 => Admin/Article/article/40
+#RewriteRule ^a\/(\d+) index.php?s=Admin/Article/article/id/$1 [QSA,PT,L]

@@ -1,0 +1,122 @@
+<include file="Public/head" /> 
+<style>
+.layui-form-checkbox[lay-skin=primary] i{
+	width:18px;
+	height:18px;
+	line-height: 18px;
+	font-size: 18px;
+}
+</style>
+</head>
+<body>
+<article class="page-container">
+	<form class="form form-horizontal layui-form" id="form-admin-auth-edit">
+	    <input type="hidden" name="auth_id" id="auth_id" value="<?php echo $authinfo['auth_id'];?>">
+	    <input type="hidden" id="auth_pid" value="<?php echo $authinfo['auth_pid'];?>">
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3">
+			    <!--<span class="c-red">*</span>-->权限名：
+			</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="text" class="input-text" value="<?php echo $authinfo['auth_name'];?>" placeholder="" id="auth_name" name="auth_name">
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3">模型：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="text" class="input-text" value="<?php echo $authinfo['module'];?>" placeholder="" id="module" name="module">
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3">控制器：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="text" class="input-text" value="<?php echo $authinfo['controller'];?>" placeholder="" id="controller" name="controller">
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3">方法：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="text" class="input-text" value="<?php echo $authinfo['action'];?>" placeholder="" id="action" name="action">
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3">是否新页面：</label>
+			<div class="formControls col-xs-8 col-sm-9" style="margin-top:3px;">
+				<?php if($authinfo['open']=='1'):?>
+                <input type="checkbox" name="open" lay-skin="primary" checked> 
+                <?php else:?>
+                <input type="checkbox" name="open" lay-skin="primary"> 
+                <?php endif;?>    
+			</div>
+		</div>
+		<div class="row cl">
+			<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+				<button type="button" class="btn btn-success radius" id="admin-auth-edit">
+				<i class="icon-ok"></i> 确定</button>
+			</div>
+		</div>
+        <?php if($authinfo['is_home']=='1'):?>
+        <input type="hidden" name="is_home" value="1"> 	
+        <?php else:?>
+        <input type="hidden" name="is_home" value="0"> 	
+        <?php endif;?>    
+	</form>
+</article>
+
+<include file="Public/foot" /> 
+
+<script type="text/javascript">
+$(function(){
+	layui.use('form', function(){
+		  var form = layui.form; 
+	});
+	
+	$("#form-admin-auth-edit").validate({
+        rules:{
+            auth_name:{
+                required:true,
+            },
+            module:{
+                required:true,
+            },
+            controller:{
+                required:true,
+            },
+            action:{
+                required:true,
+            },
+        },
+    });
+	
+	$("#admin-auth-edit").click(function(){
+        //顶级权限不验证
+        var auth_pid="<?php echo $authinfo['auth_pid'];?>";
+        if(auth_pid==0)
+        {
+            var check=true;
+        }else{
+            var check=$("#form-admin-auth-edit").valid();  
+        }
+        if(check)
+        {       
+            $.post("<?php echo U('edit');?>",$("#form-admin-auth-edit").serialize(),function(res){
+                if(res=="1")
+                {
+                    layer.msg('修改成功', {
+                      icon: 1,
+                      time: 1000
+                    }, function(){
+                       window.parent.window.location.reload();
+                    });      
+                }else{
+                    layer.alert(res, {icon: 5});
+                }
+            });     
+        }
+	});
+	
+	
+});
+</script>
+</body>
+</html>

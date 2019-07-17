@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+        <meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+        <title>交流议题</title>
+        <link href="{$smarty.const.SMARTY_CSS_URL}/mine.css" type="text/css" rel="stylesheet" />
+		<link rel="stylesheet" href="{$smarty.const.SMARTY_CSS_URL}/bootstrap.min.css">
+		<link rel="stylesheet" href="{$smarty.const.SMARTY_CSS_URL}/public.css">
+		<style>
+       .btn1{
+			margin-top:-3px;
+		}
+    	.table td,th{
+    		text-align: center;
+    	}
+    	
+    </style>
+</head>
+<body>
+	 <div class="container-fluid head_div">
+        <form class="form-inline">
+        	<select name="year" class="year form-control nav_form"></select>
+            <select name="month"  class="month form-control nav_form"></select>
+            <select name="week"  class="week form-control nav_form"></select>
+            <input value="查询" id="btn_select" type="button" class="btn btn-primary btn-sm"/>                                        
+        </form>
+    </div>
+	<!--表格-->
+	<div class="container" style="margin: 25px auto;">	
+		<div class="panel panel-primary">
+			<!--头-->
+			<div class="panel-heading" style="text-align:center;font-size:20px;">
+				{$date['year']}年{$date['month']}月{$date['week']}交流议题({$len} 项)
+			</div>
+			<!--表格-->
+			<table class="table table-bordered table-hover">
+				<thead>
+					<tr>
+						<th>序号</th>
+						<th>标题</th>
+						<th>部门</th>
+						<th>姓名</th>
+						<th>时长</th>
+						<th>附件</th>
+						{*如果传来了1则是管理员,增加修改选项*}
+						{if $is_SMARTY==1}
+						<th>修改</th>
+						{/if}
+					</tr>
+				</thead>
+				<tbody>
+					{foreach from=$data item='value'}
+					<tr>
+						<td>{$value@iteration}</td>
+						<td>{$value['title']}</td>
+						<td>{$value['dept']}</td>
+						<td>{$value['name']}</td>
+						<td>{$value['time']}</td>
+						{if $value['upload']==""}
+						<td>无</td>
+						{else}
+						<td>
+							<a href="{$smarty.const.SELF_URL}/{$value['upload']}">下载</a>
+						</td>
+						{/if}
+						{if $is_SMARTY==1}
+						<td>
+							<a href="#" onclick="del({$value['id']})">删除</a>
+						</td>
+						{/if}
+					</tr>
+					{/foreach}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</body>
+</html>
+<script src="{$smarty.const.SMARTY_JS_URL}/jquery.min.js"></script>
+<script src="{$smarty.const.SMARTY_JS_URL}/bootstrap.min.js"></script>
+<script src="{$smarty.const.SMARTY_JS_URL}/zxh_public.js"></script>
+<script>
+	/*
+	 * 初始化年月
+	 */
+	$().ready(function(){
+		date();
+	});
+	function date(){
+		var url="{$smarty.const.__CONTROLLER__}/date";
+		$.post(url,{ "1":"1" },function(msg){
+			var arr_month=msg.arr_month;
+			var get_year="{$smarty.get.year}";
+			var get_month="{$smarty.get.month}";
+			var get_week="{$smarty.get.week}";
+			if(get_year!="" || get_month!=""|| get_week!=""){
+				now_year=get_year;
+				now_month=get_month;
+				now_week=get_week;
+			}else{
+				now_year=msg.now_year;
+				now_month=msg.now_month;
+				now_week=msg.now_week;
+			}
+			for(var i=1;i<arr_month.length;i++){
+				var newop=new Option(arr_month[i],i);
+				//如果等于服务器传来的当年月则默认
+				if(i==now_month){
+					newop.selected="selected";
+				}
+				$('.month')[0].options.add(newop);
+			}
+			//生成年
+			var arr_year=msg.arr_year;
+			for(var i=2016;i<=2025;i++){
+				var newop=new Option(arr_year[i],i);
+				if(i==now_year){
+					newop.selected="selected";
+				}
+				$('.year')[0].options.add(newop);
+			}
+			//生成周
+			var arr_week=msg.arr_week;
+			for(var i=0;i<arr_week.length;i++){
+				var newop=new Option(arr_week[i],arr_week[i]);
+				if(arr_week[i]==now_week){
+					newop.selected="selected";
+				}
+				$('.week')[0].options.add(newop);
+			}
+			
+		},'json');
+	}
+	/*
+	 * 删除
+	 */
+	
+	function del(id){
+		if(confirm("删除后无法恢复,确认删除吗？")){
+			var url="{$smarty.const.__CONTROLLER__}/talk_del/id/"+id;
+			$.get(url,{ 'id':id },function(msg){
+				if(msg=="true"){
+					location.reload();
+				}
+			});	
+		}else{
+			return false;
+		}
+	}
+	
+	/*
+	 * 查询
+	 */
+	$('#btn_select').bind('click',function(){
+		var is_SMARTY="{$is_SMARTY}";
+		if(is_SMARTY==1){
+			var str='/mark/1';
+		}else{
+			var str='';
+		}
+		var year=$('.year').val();
+		var month=$('.month').val();
+		var week=$('.week').val();
+		var url="{$smarty.const.__CONTROLLER__}/talklist/year/"+year+"/month/"+month+"/week/"+week+str;
+		window.location=url;
+	});
+	
+	
+	
+</script>
+
+
+
+
+

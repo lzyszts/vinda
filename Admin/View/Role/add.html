@@ -1,0 +1,199 @@
+<include file="Public/head" /> 
+<style>
+	.layui-tab{
+		margin:0;
+	}
+	.layui-tab-content{
+		padding:10px 0 0 0;
+	}
+</style>
+</head>
+<body>
+<article class="page-container">
+	<form  class="form form-horizontal" id="form-admin-role-add">
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3">
+			    <span class="c-red">*</span>角色名称：
+			</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="text" class="input-text" value="" placeholder="" id="role_name" name="role_name">
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3">备注：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="text" class="input-text" value="" placeholder=""  name="role_des">
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3">权限：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+					 <ul class="layui-tab-title">
+					     <li class="layui-this">后台权限</li>
+				    	 <li>前台权限</li>
+					  </ul>
+					  <div class="layui-tab-content">
+					  	  <!--后台权限-->
+					  	  <div class="layui-tab-item layui-show">
+							    <?php foreach($authinfo_0 as $v):
+							    	  	if($v['is_home']==0):
+							    ?>
+								<dl class="permission-list">
+									<dt>
+										<label>
+											<input type="checkbox" class="level0" salue="<?php echo $v['auth_id'];?>" name="role_auth_ids[]" >
+											<?php echo $v['auth_name'];?>
+									    </label>
+									</dt>
+									<dd>
+									    
+									    <?php foreach($authinfo_1 as $v1): 
+									           if($v1['auth_pid']==$v['auth_id']):
+									    ?>
+										<dl class="cl permission-list2">
+											<dt>
+												<label class="">
+													<input type="checkbox" value="<?php echo $v1['auth_id'];?>" name="role_auth_ids[]">
+													<?php echo $v1['auth_name'];?>
+											    </label>
+											</dt>
+											<dd>
+											    <?php foreach($authinfo_2 as $v2):
+				                                         if($v2['auth_pid']==$v1['auth_id']):               
+				                                ?>
+											    
+												<label class="">
+													 <input type="checkbox" value="<?php echo $v2['auth_id'];?>" name="role_auth_ids[]">
+												     <?php echo $v2['auth_name'];?>
+												</label>
+					                            <?php endif;endforeach;?>
+											</dd>
+										</dl>
+				                        <?php endif;endforeach;?>
+									</dd>
+								</dl>
+							    <?php endif;endforeach;?>
+						  </div>				  	  		
+						  <!--前台权限-->
+	    				  <div class="layui-tab-item">
+    				  			<?php foreach($authinfo_0 as $v):
+    				  					if($v['is_home']==1):
+    				  			?>
+								<dl class="permission-list">
+									<dt>
+										<label>
+											<input type="checkbox" class="level0" value="<?php echo $v['auth_id'];?>" name="role_home_ids[]" >
+											<?php echo $v['auth_name'];?>
+									    </label>
+									</dt>
+									<dd>
+									    
+									    <?php foreach($authinfo_1 as $v1): 
+									               if($v1['auth_pid']==$v['auth_id']):
+									    ?>
+										<dl class="cl permission-list2">
+											<dt>
+												<label class="">
+													<input type="checkbox" value="<?php echo $v1['auth_id'];?>" name="role_home_ids[]">
+													<?php echo $v1['auth_name'];?>
+											    </label>
+											</dt>
+											<dd>
+											    <?php foreach($authinfo_2 as $v2):
+				                                         if($v2['auth_pid']==$v1['auth_id']):               
+				                                ?>
+											    
+												<label class="">
+													 <input type="checkbox" value="<?php echo $v2['auth_id'];?>" name="role_home_ids[]">
+												     <?php echo $v2['auth_name'];?>
+												</label>
+					                            <?php endif;endforeach;?>
+											</dd>
+										</dl>
+				                        <?php endif;endforeach;?>
+									</dd>
+								</dl>
+							    <?php endif;endforeach;?>
+	    				  </div>
+					  </div>
+				</div>	  
+			</div>   
+		</div>
+		<div class="row cl">
+			<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+                <button type="button" class="btn btn-success radius" id="admin-role-save">
+                <i class="icon-ok"></i>确定</button>
+            </div>
+		</div>
+	</form>
+</article>
+
+<include file="Public/foot" /> 
+<script type="text/javascript">
+$(function(){
+	layui.use('element', function(){
+	  	var element = layui.element;
+	});
+	
+	$(".permission-list dt input:checkbox").click(function(){
+		$(this).closest("dl").find("dd input:checkbox").prop("checked",$(this).prop("checked"));
+		if($(this).prop("checked"))
+		{
+		    $(this).parents(".permission-list").find(".level0").prop("checked",true);
+		}
+	    
+		
+	});
+	$(".permission-list2 dd input:checkbox").click(function(){
+		var l =$(this).parent().parent().find("input:checked").length;
+		var l2=$(this).parents(".permission-list").find(".permission-list2 dd").find("input:checked").length;
+		if($(this).prop("checked")){
+			$(this).closest("dl").find("dt input:checkbox").prop("checked",true);
+			$(this).parents(".permission-list").find("dt").first().find("input:checkbox").prop("checked",true);
+		}
+		else{
+			if(l==0){
+				$(this).closest("dl").find("dt input:checkbox").prop("checked",false);
+			}
+			if(l2==0){
+				$(this).parents(".permission-list").find("dt").first().find("input:checkbox").prop("checked",false);
+			}
+		}
+	});
+	
+	$("#form-admin-role-add").validate({
+		rules:{
+			role_name:{
+				required:true,
+			},
+		},
+	});
+	
+	$("#admin-role-save").click(function(){
+	    var check=$("#form-admin-role-add").valid();
+	    if(check)
+        {       
+            $.post("<?php echo U('add');?>",$("#form-admin-role-add").serialize(),function(res){
+                if(res=="1")
+                {
+                    layer.msg('添加成功', {
+                      icon: 1,
+                      time: 1000
+                    }, function(){
+                       window.parent.window.location.reload();  
+                    });     
+                }else{
+                    layer.alert(res, {icon: 5});
+                }
+            });     
+        }
+	});
+	
+	
+	
+	
+});
+</script>
+</body>
+</html>

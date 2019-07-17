@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA- Compatible" content="IE=edge,chrome=1">
+    <link rel="icon" href="<?php echo DATA_IMG_URL;?>/vinda.ico">
+    <link rel="stylesheet" type="text/css" href="<?php echo DATA_JS_URL;?>/layui/css/layui.css" />
+    <script type="text/javascript" src="<?php echo DATA_JS_URL;?>/layui/layui.js"></script>
+    <script type="text/javascript" src="<?php echo DATA_JS_URL;?>/jquery-1.11.3.min.js"></script>
+	<!-- animate.css-->
+	<link rel="stylesheet" type="text/css" href="<?php echo DATA_CSS_URL;?>/animate.css" />
+    <title>KPI看板</title>
+<style>
+.layui-table{
+	text-align: center;
+}
+.layui-table-header th{
+	font-size: 20px;
+	text-align: center;
+}
+.title{
+	font-size: 22px;
+	text-align: left;
+/*	line-height: 40px;*/
+	text-indent: 5px;
+}
+.title span{
+	display: inline-block;
+	box-sizing: border-box;
+	width: 100%;
+	height:40px;
+	line-height: 41px;
+	border:1px #fff solid;
+}
+.title .title-input{
+	height: 40px;
+}
+.red{
+	color: #dc5236;
+}
+</style>
+</head>
+<body class="fadeIn animated">
+
+
+<div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+	  <ul class="layui-tab-title">
+	    <li class="layui-this">日报表内容</li>
+	    <li>月度报表内容</li>
+	    <li>年度KPI看板</li>
+	  </ul>
+	  <div class="layui-tab-content">
+	    <div class="layui-tab-item layui-show" style="text-align:center;" id="day">
+	    	<!-- <input type="text" class="layui-input" value="<?php echo $title['0']['title'];?>"> -->
+	    	<div class="title"><span data-id='1'><?php echo $title['0']['title'];?></span></div>
+			<table id="day-table" lay-filter="day-table"></table>
+		</div>
+	    <div class="layui-tab-item" id="month">
+	    	<div class="title"><span data-id='2'><?php echo $title['1']['title'];?></span></div>
+			<table id="month-table" lay-filter="month-table"></table>
+	    </div>
+	    <div class="layui-tab-item" id="year">
+	    	<div class="title"><span data-id='3'><?php echo $title['2']['title'];?></span></div>
+			<table id="year-table" lay-filter="year-table"></table>
+	    </div>
+	  </div>
+</div> 
+	
+</body>
+<script>
+//选项卡
+layui.use('element', function(){
+	var element = layui.element;
+});
+layui.use('table', function(){
+  table = layui.table;
+  //天
+  table.render({
+	    elem: '#day-table',
+	    height: 350,
+	    width:890,
+	    url: '<?php echo U("day_data");?>',     
+	    cols: cols
+  });
+  //月
+  table.render({
+	    elem: '#month-table',
+	    height: 600,
+	    url: '<?php echo U("month_data");?>',    
+	    cols: cols2
+  });
+  //年
+  table.render({
+	    elem: '#year-table',
+	    height: 600,
+	    url: '<?php echo U("year_data");?>',     
+	    cols: cols3
+  });
+  //天修改
+  table.on('edit(day-table)', function(obj){
+  	var value = obj.value //得到修改后的值
+	  var data = obj.data //得到所在行所有键值
+	  var field = obj.field; //得到字段
+  	  var json={
+  	  	 "type":"day",
+  	  	 "id":data.id,
+  	  	 "field":field,
+  	  	 "value":value
+  	  }; 
+  	  $.post("<?php echo U('change');?>",json,function(res){	
+         if(res.status==0)
+         {
+            layer.msg('请先登录',function(){
+                window.top.location.href ="<?php echo SELF_URL;?>";
+            }); 
+         }else{
+            layer.msg('字段更改为：'+ value);
+         }  
+	  });
+  }); 
+  //月修改
+  table.on('edit(month-table)', function(obj){
+  	  var value = obj.value //得到修改后的值
+	  var data = obj.data //得到所在行所有键值
+	  var field = obj.field; //得到字段
+  	  var json={
+  	  	 "type":"month",
+  	  	 "id":data.id,
+  	  	 "field":field,
+  	  	 "value":value
+  	  }; 
+  	  $.post("<?php echo U('change');?>",json,function(res){	
+	       if(res.status==0)
+         {
+            layer.msg('请先登录',function(){
+                window.top.location.href ="<?php echo SELF_URL;?>";
+            }); 
+         }else{
+            layer.msg('字段更改为：'+ value);
+         }
+	  });
+  }); 
+  //年修改
+  table.on('edit(year-table)', function(obj){
+  	var value = obj.value //得到修改后的值
+	  var data = obj.data //得到所在行所有键值
+	  var field = obj.field; //得到字段
+  	var json={
+  	  	 "type":"year",
+  	  	 "id":data.id,
+  	  	 "field":field,
+  	  	 "value":value
+  	  }; 
+  	  $.post("<?php echo U('change');?>",json,function(res){	
+	      if(res.status==0)
+         {
+            layer.msg('请先登录',function(){
+                window.top.location.href ="<?php echo SELF_URL;?>";
+            }); 
+         }else{
+            layer.msg('字段更改为：'+ value);
+         }
+	  });
+  });
+
+});
+//day表头
+var cols=[[ 
+  {field: 'xiangmu', title: '项目', width:180,rowspan:2,fixed: 'left'},
+  {field: 'danwei', title: '单位', width:100,rowspan:2,edit:'text'},
+  {title: '1、2号机',colspan:2},
+  {title: '3、4号机',colspan:2},
+  {title: '5号机',colspan:2},
+  ],
+  [
+  {field: 'mubiao1', title: '目标值', width:100,edit:'text'},
+  {field: 'shiji1', title: '实际值', width:100,edit:'text'},
+  {field: 'mubiao2', title: '目标值', width:100,edit:'text'},
+  {field: 'shiji2', title: '实际值', width:100,edit:'text'},
+  {field: 'mubiao3', title: '目标值', width:100,edit:'text'},
+  {field: 'shiji3', title: '实际值', width: 100,edit:'text'},
+]];
+//month表头
+var cols2=[
+  [ 
+  {field: 'chejian', title: '车间', width:180,rowspan:2,},
+  {field: 'banzu', title: '班组', width:100,rowspan:2},
+  {title: '项目',colspan:6},
+  ],
+  [
+  {field: 'xiaolv', title: 'OEE效率%', width:150,edit:'text'},
+  {field: 'chanliang', title: '产量t', width:100,edit:'text'},
+  {field: 'zql', title: '吨纸蒸汽量m³', width:160,edit:'text'},
+  {field: 'jihd', title: '纸机吨纸电耗kw.h', width:200,edit:'text'},
+  {field: 'jianghd', title: '制浆吨纸电耗kw.h', width:200,edit:'text'},
+  {field: 'zhd', title: '总吨纸耗电量kw.h', width: 200,edit:'text'},
+]];
+//year表头
+var cols3=[[ 
+  {field: 'zhibiao', title: '指标描述', width:150,fixed:'left'},
+  {field: 'mubiao', title: '目标值', width:90,edit:'text'},
+  {field: 'danwei', title: '单位', width:70,edit:'text'},
+  {field: 'yue1', title: '1月', width:75,edit:'text'},
+  {field: 'yue2', title: '2月', width:75,edit:'text'},
+  {field: 'yue3', title: '3月', width:75,edit:'text'},
+  {field: 'yue4', title: '4月', width:75,edit:'text'},
+  {field: 'yue5', title: '5月', width:75,edit:'text'},
+  {field: 'yue6', title: '6月', width:75,edit:'text'},
+  {field: 'yue7', title: '7月', width:75,edit:'text'},
+  {field: 'yue8', title: '8月', width:75,edit:'text'},
+  {field: 'yue9', title: '9月', width:75,edit:'text'},
+  {field: 'yue10', title: '10月', width:75,edit:'text'},
+  {field: 'yue11', title: '11月', width:75,edit:'text'},
+  {field: 'yue12', title: '12月', width:75,edit:'text'},
+]];
+
+
+//修改标题
+$(document).on("click", ".title span", function() {
+	var html=$(this).html(); //文字内容
+	var par=$(this).parent();
+	var title_id=$(this).attr('data-id');
+	par.empty();
+	var str='<input type="text" class="layui-input title-input" value="'+html+'">';
+	par.append(str);
+	$(".title-input").focus();
+	//离开焦点修改题目
+	$(".title-input").blur(function(){
+		var new_title=$(this).val();
+		var data={
+			"id":title_id,
+			"title":new_title
+		}
+		$.post("<?php echo U('change_title');?>",data,function(res){	
+      if(res.status==0)
+       {
+          layer.msg('请先登录',function(){
+              window.top.location.href ="<?php echo SELF_URL;?>";
+          }); 
+       }else{
+          var str='<span data-id="'+title_id+'">'+new_title+'</span>';
+          par.empty();
+          par.append(str);
+          layer.msg('题目更改为：'+ new_title);
+       }		
+		});
+	});
+});
+
+
+
+</script>
+</html>

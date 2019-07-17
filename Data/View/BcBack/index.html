@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <link rel="icon" href="<?php echo DATA_IMG_URL;?>/vinda.ico">
+    <link rel="stylesheet" type="text/css" href="<?php echo DATA_JS_URL;?>/layui/css/layui.css" />
+    <script type="text/javascript" src="<?php echo DATA_JS_URL;?>/layui/layui.js"></script>
+    <script type="text/javascript" src="<?php echo DATA_JS_URL;?>/jquery-1.11.3.min.js"></script>
+    <title>班产报表</title>
+<style>
+.layui-table{
+  text-align: center;
+}
+.layui-table-header th{
+  text-align: center;
+}
+#condition{
+  margin-top: 30px;
+}
+a{
+  color:#0014ff ;
+}
+
+</style>
+</head>
+<body class="fadeIn animated">
+<div class="layui-tab layui-tab-brief">
+    <include file="Public/backnav" /> 
+    <form class="layui-form" id="condition">
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">时间段：</label>
+                <div class="layui-input-inline" style="width: 150px;">
+                    <input type="text" class="layui-input" id="date_start" name="date_start">
+                </div>
+                <div class="layui-form-mid">-</div>
+                <div class="layui-input-inline" style="width: 150px;">
+                    <input type="text" class="layui-input" id="date_end" name="date_end">
+                </div>
+              <!--   <label class="layui-form-label">状态：</label>
+              <div class="layui-input-inline" style="width: 150px;">
+                  <select lay-filter="state" name="state" id="state">
+                      <option value="">所有</option>
+                      <?php foreach($state as $v):?>
+                      <option value="<?php echo $v['state_num']; ?>" <?php if($v['state_cn']=='已完成')echo 'selected';?>><?php echo $v['state_cn'];?></option>
+                      <?php endforeach;?>
+                  </select>
+              </div> -->
+            </div>
+        </div>
+        <div class="layui-form-item" style="margin-bottom:0;">
+            <div class="layui-inline">
+               <label class="layui-form-label">条件搜索：</label> 
+               <div class="layui-input-inline" style="width: 150px;">
+                    <select lay-filter="title-class" id="title-class">
+                        <option value="">请选择</option>
+                        <option value="1">姓名</option>
+                        <option value="2">班组</option>
+                        <option value="3">机台编号</option>
+                        <option value="4">产品种类</option>     
+                    </select>
+               </div>
+               <div class="layui-form-mid">&nbsp;</div>
+               <div class="layui-inline" style="width: 150px;">
+                  <input class="layui-input" autocomplete="off" id="title">
+               </div>
+               <div class="layui-inline">
+                    <button class="layui-btn" type="button" lay-submit id="search" lay-filter="search">搜索</button>
+                    <button class="layui-btn" type ="button" id="export">导出</button>
+                    <button class="layui-btn" type="reset">重置</button>
+               </div>
+            </div>
+        </div>
+    </form>
+	  <div class="layui-tab-content">
+	    <div class="layui-tab-item layui-show" id="all">
+        <table id="allData" lay-filter="data"></table> 
+      </div>
+	  </div>
+</div> 
+	
+
+<script type="text/html" id="is_lock">
+  {{#  if(d.is_lock == '1'){ }}
+  <span style="color: #dc5236;">已锁定</span>
+  {{#  } }}
+</script>
+</body>
+<script>
+  //选项卡、表单
+  layui.use(['element','form','laydate'], function(){
+    var element = layui.element,form=layui.form,laydate=layui.laydate;
+      laydate.render({
+        elem: '#date_start',
+        value:new Date()
+      });
+      laydate.render({
+        elem: '#date_end',
+        value:new Date()
+      });     
+      //搜索
+      form.on('submit(search)',function(data){
+         table = layui.table;
+         var tableIns = table.render({
+            elem: '#allData',
+            cols: cols,
+            url: '<?php echo U("search");?>',
+            where: { 
+              date_start:$("#date_start").val(),
+              date_end:$("#date_end").val(),
+              title_class:$("#title-class").val(),
+              title:$("#title").val(),
+            },
+            page: {
+              curr: 1 //重新从第 1 页开始
+            },
+            height: 450,
+            limit:30,  
+          }); 
+      })
+});
+
+ //导出
+$("#export").click(function(){
+  var startDate=$("#date_start").val();
+  var endDate=$("#date_end").val();
+
+  var msg="导出"+startDate+"到"+endDate+"数据吗？";
+  layer.confirm(msg, function(){
+       $.post("<?php echo U('export');?>",{'date_start':startDate,'date_end':endDate},function(res){
+         layer.closeAll();
+         var url="<?php echo SELF_URL;?>"+res.url;
+         layer.open({
+            type: 1,
+            skin: 'layui-layer-rim',
+            title:'下载地址',
+            area: ['300px', '150px'], //宽高
+            content: '<a href="'+url+'">'+res.filename+'</a>'
+          });
+       },'json').error(function(res){
+          layer.alert(res.responseText,{icon: 2});
+       });
+    });
+    //阻止提交
+    return false;
+});
+
+
+//表格
+var cols=[[ //表头
+    {type:'numbers'},
+    {field: 'is_lock', title: '状态', width:80,templet: '#is_lock', unresize: true},
+    {field: 'name', title: '姓名', width:100},
+    {field: 'gh', title: '工号', width:80},
+    {field: 'sc_num', title: '生产批号', width:120},
+    {field: 'wg_num', title: '完工单号', width:100},
+    {field: 'zhou_num', title: '原纸张轴号', width:150},
+    {field: 'date', title: '日期', width:120},
+    {field: 'up_date', title: '下纸时间', width:120},
+    {field: 'cp_class', title: '产品种类', width:285},
+    {field: 'zhouzhong', title: '轴重', width:120},
+    {field: 'cp_num', title: '产品编码', width:120},
+    {field: 'dingliang', title: '定量(g/m3)', width:120},
+    {field: 'jt_num', title: '机台编号', width:90},
+    {field: 'banci', title: '班次', width:70},
+    {field: 'banzu', title: '班组', width:70},
+    {field: 'speed', title: '车速(m/min)', width:120}, 
+    {field: 'guige', title: '规格', width:120},
+    {field: 'juanchang', title: '卷长', width:120},
+    {field: 'maozhong', title: '毛重(kg)', width:120},
+    {field: 'jingzhong', title: '净重(KG)', width:120},
+    {field: 'zhijing', title: '直径(mm)', width:100},
+    {field: 'is_hg', title: '是否合格', width:100},
+    {field: 'is_hd', title: '换刀情况', width:100},
+    {field: 'is_dt', title: '断头情况', width:100},
+    {field: 'zz_level', title: '皱纹级别', width:100},
+    {field: 'next', title: '下道工序', width:100},
+    {field: 'bz', title: '备注', width:150},
+  ]];
+
+  layui.use('table',function(){
+    table = layui.table;
+    table.render({
+      elem: '#allData',
+      height: 450,
+      url: '<?php echo U("alldata");?>',
+      page: true, //开启分页
+      request: {
+        limitName: 'pagesize' //每页数据量的参数名
+      },
+      limit:30,       
+      cols: cols
+    });
+  });
+
+
+
+</script>
+</html>

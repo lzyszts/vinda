@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+    <title>交流议题表单</title>
+	<link rel="stylesheet" href="{$smarty.const.SMARTY_CSS_URL}/bootstrap.min.css">
+	<link rel="stylesheet" href="{$smarty.const.SMARTY_CSS_URL}/upload.css">
+	<style>
+	*{
+		font-family: "微软雅黑";
+	}
+	/*登录框整体*/
+	.login_div{
+		width:400px;
+		margin:0 auto;
+	}
+	.row{
+		margin:10px auto;
+	}
+	.row label{
+		line-height:34px;
+
+	}
+	/*登录框头*/
+	.login_head{
+		color:white;
+		background:#006DCC;
+	}
+	
+	.login_btn{
+		margin-right:45%;
+	}
+	.error_div{
+		text-align:center;
+		position:relative;
+		margin-bottom:0;
+		z-index:1051;
+	}
+	.readonly {
+	    background: #dbdbdb;
+	}
+	.progress{
+		margin-bottom:0;
+		width: 293px;
+		float:right;		
+	}
+	.modal-body{
+			padding:0;
+		}
+	.modal-footer{
+		padding:5px;
+		padding-right:15px;
+	}
+	</style>
+</head>
+<body style="border-top:1px #1c94c4 solid">
+	<!-- 模态框声明 -->
+	<div class="modal show" id="myModal" data-backdrop="static">
+		<!-- 窗口声明 -->
+		<div class="modal-dialog sm-lg login_div">
+			<!-- 内容声明 -->
+			<div class="modal-content">
+				<!--上-->
+				<div class="modal-header login_head">
+					<h4 class="modal-title">{$theme}</h4>
+				</div>	
+				<!--中-->	
+				<form action="{$smarty.const.__CONTROLLER__}/talk" method="post" enctype="multipart/form-data">		
+				<div class="modal-body login_body">
+					<div class="container-fluid">
+						<div class="row">
+			            	<label for="title" class="col-lg-2 col-md-2 col-sm-2 col-xs-2">标题</label>
+			            	<div class="col-lg-10 col-md-10 col-sm-10 col-xs-10">
+			                	<input type="text" id="title" name="title" placeholder="请输入标题" class="form-control" >
+			            	</div>
+			        	</div>
+						<div class="row">
+			            	<label for="dept" class="col-lg-2 col-md-2 col-sm-2 col-xs-2">部门</label>
+			            	<div class="col-lg-10 col-md-10 col-sm-10 col-xs-10 ">
+			                	<select class="form-control" id="dept" name="dept">
+									<option>请选择部门</option>
+								</select>
+			            	</div>
+			        	</div>
+						<div class="row">
+							<label for="name" class="col-lg-2 col-md-2 col-sm-2 col-xs-2">姓名</label>
+			            	<div class="col-lg-10 col-md-10 col-sm-10 col-xs-10">
+			                	<input type="text" id="name" name="name" placeholder="请输入姓名" class="form-control" >
+			            	</div>
+			        	</div>
+						<div class="row">
+							<label for="time" class="col-lg-2 col-md-2 col-sm-2 col-xs-2">时长</label>
+			            	<div class="col-lg-10 col-md-10 col-sm-10 col-xs-10">
+			                	<input type="text" id="time" name="time" class="form-control" >
+			            	</div>
+			        	</div>
+			        	<div class="row">
+			        		<label for="time" class="col-lg-2 col-md-2 col-sm-2 col-xs-2">附件</label>
+			        		<div class="uploader white">
+								<input type="text" class="filename form-control" readonly/>
+								<input type="button" name="file" class="button" value="上传"/>
+								<input type="file" size="30" name="upload" id="upload"/>
+								<!--接收路径-->
+								<input type="hidden" name="upload" id="upload_url">
+							</div>
+							<!--进度条-->
+							<div class="progress hide">
+								<div class="progress-bar" style="width:0%;">0%</div>
+							</div>
+						</div>
+						<div class="row">
+							
+						</div>
+			        </div>					
+				</div>
+				<!--下-->
+				<div class="modal-footer">
+					<button class="btn btn-primary" id="submit_btn">提交</button>
+				</div>
+				<!--传序号-->
+				<input type="hidden" name="xuhao" value="{$xuhao}"/>
+				<!--传年月周-->
+				<input type="hidden" name="year" value="{$date['year']}"/>
+				<input type="hidden" name="month" value="{$date['month']}"/>
+				<input type="hidden" name="week" value="{$date['week']}"/>
+				</form>
+				<!--错误提示框-->
+				<div class="alert alert-danger error_div"  id="error_div">
+					<span class="error_info"></span>
+					<button type="button" class="close"> 
+						<span>&times;</span>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>
+<script src="{$smarty.const.SMARTY_JS_URL}/jquery.min.js"></script>
+<script src="{$smarty.const.SMARTY_JS_URL}/bootstrap.min.js"></script>
+<script src="{$smarty.const.SMARTY_JS_URL}/zxh_public.js"></script>
+<script>
+	$().ready(function(){
+		keep();
+		reload_dept();
+		$('.error_div').hide();
+	});	
+	/*
+	 * 窗口保持
+	 */
+	$(window).resize(keep);
+	function keep(){
+		var body_height=$('#myModal').height();
+		var login_height=$('.login_div').height();
+		var new_margin_top=(body_height-login_height)/2;
+		$('.login_div').css('margin-top',new_margin_top);
+	}
+	
+	/*
+	 * 初始化部门
+	 */
+	function reload_dept(){
+	    /*
+		var url="{$smarty.const.__CONTROLLER__}/loadingop";
+		var data={};
+		$.post(url,data,function(msg){
+			for(var i=1;i<=11;i++){
+				//这里文本和值取一样
+				var text=msg[i]['role_name'];//文本
+				var value=msg[i]['role_name'];//值
+				var op =new Option(text,value);
+				$('#dept')[0].options.add(op);//加入selsect
+			}
+		});
+		*/
+		var dept=['信息科','人力资源及行政部','财务部','采购部','仓储科','品管部','工程技术部','生产部','生产调度科','制造部','安全科']
+		for(var i=0;i<dept.length;i++){
+            var text=dept[i];//文本
+            var value=dept[i];//值
+            var op =new Option(text,value);
+            $('#dept')[0].options.add(op);//加入selsect
+        }
+		
+	}
+
+	$('.close').click(function(){
+		$('.error_div').fadeOut(200);
+	});
+	$('select').click(function(){
+		$('.error_div').fadeOut(200);
+	});
+	$('input').click(function(){
+		$('.error_div').fadeOut(200);
+	});
+
+
+	
+	 /*
+	  * 上传
+	  */
+	$("input[type=file]").change(function(){
+		//1、判断upload_url有没有 有则删除之前的文件
+		if($('#upload_url').val()!=""){
+			var file=$('#upload_url').val();
+			var url = "{$smarty.const.__CONTROLLER__}/del_upload";
+			$.post(url,{ 'file':file },function(){});
+		}
+		//2、然后再上传
+		$("#upload").attr("name","upload");
+		var filename=$(this).val();
+		var suffix=filename.substring(filename.length-4);
+		suffix=suffix.toLowerCase();//转小写
+		$(this).parents(".uploader").find(".filename").val($(this).val());
+		upload_file();	
+	});
+	
+	function upload_file(){
+		$('.progress').removeClass('hide');		
+		$('.progress-bar').css('width',0);	
+		var fm = $('form')[0];
+		var url = "{$smarty.const.__CONTROLLER__}/talk_upload"; 	
+        var form = new FormData(fm);
+        // XMLHttpRequest 对象
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function(){
+     		if(xhr.readyState==4 && xhr.responseText!="upload/"){
+     			$("#upload_url").val(xhr.responseText);
+     			//上传成功取消file的name属性避免提交的时候再提交
+     			$("#upload").attr("name","");
+     		}
+   		}
+		//进度条
+		 xhr.upload.onprogress = function(evt){
+            var lod = evt.loaded;
+            var tal = evt.total;
+            var per = Math.floor((lod/tal)*100) + "%";
+            //给div设置宽度百分比
+            $('.progress-bar').html(per);
+            $('.progress-bar').css('width',per);
+      	  }
+		xhr.open('post',url);
+        xhr.send(form);
+	}
+	
+
+	
+	
+	
+	/*
+	 * 提交
+	 */
+	$('#submit_btn').click(function(){
+		if($('#title').val()==""){
+			errinfo('错误 : 标题不能为空');
+			return false;
+		}
+		if($('#dept').val()=="请选择部门"){
+			errinfo('错误 : 请选择部门');
+			return false;
+		}
+		if($('#name').val()==""){
+			errinfo('错误 : 姓名不能为空');
+			return false;
+		}
+		if($('#time').val()==""){
+			errinfo('错误 : 时长不能为空');
+			return false;
+		}
+		if($('.progress-bar').html()!="0%" && $('.progress-bar').html()!="100%"){
+			errinfo('错误 :请等待附件上传完成再提交 ');
+			return false;
+		}
+	});
+	
+	function errinfo(info){
+		var theme=info;
+		$('.error_div').fadeIn(200);
+		$('.error_info').text("");
+		$('.error_info').prepend(theme);
+	}
+	
+	
+</script>
+
+
+

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+	<title>机台管理</title>   
+	<link rel="stylesheet" href="{$smarty.const.SMARTY_CSS_URL}/bootstrap.min.css">
+	<link rel="stylesheet" href="{$smarty.const.TOOLS}/easyui/themes/default/easyui.css">  
+    <link rel="stylesheet" href="{$smarty.const.TOOLS}/easyui/themes/icon.css"> 
+    <link rel="stylesheet" href="{$smarty.const.SMARTY_CSS_URL}/scb-change-public.css">  
+    <script type="text/javascript" src="{$smarty.const.SMARTY_JS_URL}/jquery.min.js"></script>
+<style>
+.tools{
+	margin:10px auto;
+	text-align: center;
+}
+.panel-header, .panel-body {  
+	border-width: 0px;  
+	font-size:14px;
+}  
+.panel-title {
+    font-size: 16px;
+    font-weight:normal;
+}
+
+</style>
+</head>
+<body>
+	
+<nav class="navbar navbar-default navbar-fixed-top">
+	<div class="container">
+		<div class="navbar-header">
+			<a href="back.html" class="navbar-brand">转换记录后台</a>
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+		</div>
+		<div class="collapse navbar-collapse" id="navbar-collapse">
+			<ul class="nav navbar-nav navbar-left" style="min-width:350px;">
+				<li><a href="{U('back')}">用户管理</a></li>　
+				<li class="active"><a href="{U(machine)}">机台管理</a></li>
+				<li><a href="{U('data')}">数据中心</a></li>
+				<li><a href="{U('loginout')}">退出</a></li> 
+			</ul>
+			<ul class="nav navbar-nav navbar-right" style="max-height:50px;">
+				<li><a>你好！{$name}</a></li>　
+			</ul>	
+		</div>
+	</div>
+</nav>
+
+
+
+<div class="content">
+	<div class="container">
+		 <div class="tools">
+		 	 <button type="button" class="btn btn-primary" id="btn_add">添加机台</button>
+		 </div>
+		
+	     <table class="table table-bordered table-hover table-striped" id="user_table"> 
+		    <tbody>
+			    <tr>
+					<th style="width:100px;">编号</th>
+			        <th style="width:100px;">机台名</th>
+			        <th style="width:50px;"></th> 
+				</tr>
+				{foreach $data as $v}
+				<tr>
+					<td>{$v@index+1}</td>
+			        <td>{$v.machine}</td>
+			        <td><span class="glyphicon glyphicon-trash machine_remove" style="color:#ccc;cursor:pointer;" data-id="{$v.id}"></span></td>
+				</tr>
+				{/foreach}
+		    </tbody>
+	   	  </table>
+	</div>
+</div>
+
+
+
+
+
+</body>
+</html>
+<script type="text/javascript" src="{$smarty.const.TOOLS}/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="{$smarty.const.TOOLS}/easyui/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="{$smarty.const.SMARTY_JS_URL}/bootstrap.min.js"></script>
+<script type="text/javascript" src="{$smarty.const.SMARTY_JS_URL}/scb_public.js"></script>
+<script>
+$("#btn_add").click(function(){
+	$("body").append(creatModal("add_group","添加机台","300px"));
+	//输入框
+	var text="<div class='form-group'><label class='control-label'>机台名：</label><input class='form-control'type='text'></div>";
+	$(".add_group .modal-body").append(text);
+	//确定
+	var btn=creatInput("button","btn btn-primary btn_ok","","确认");
+	$(".add_group .modal-footer").append(btn);
+	$(".add_group").modal("show");
+	keep_body();
+});
+//插入
+$(document).on("click", ".btn_ok", function() {
+	var data={
+		machine:$(".add_group :text").val(),
+	}
+	$.post("{U('addMachine')}",data,function(res){
+		if(res=="0")
+		{
+			$.messager.alert('错误','机台已存在或其他错误','info');
+		}else{
+			location.reload();
+		}
+	});
+});
+
+//删除
+$(".machine_remove").click(function(){
+	var tr=$(this).parent().parent();
+	var id=$(this).attr("data-id");
+		$.post("{U(delMachine)}",{ 'id':id },function(res){
+			if(res=="1")
+			{
+				tr.remove();
+			}
+		});
+});
+	
+</script>
+
+
+

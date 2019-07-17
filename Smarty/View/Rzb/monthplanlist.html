@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+    <title>角色列表</title>
+    <link href="{$smarty.const.SMARTY_CSS_URL}/mine.css" type="text/css" rel="stylesheet" />
+	<link rel="stylesheet" href="{$smarty.const.SMARTY_CSS_URL}/bootstrap.min.css">
+	<link rel="stylesheet" href="{$smarty.const.SMARTY_CSS_URL}/public.css">
+<style>
+   a{
+	text-decoration: none !important;
+   }
+   td,th{
+   	text-align: center;
+   }
+   .pre:hover{
+   background: url({$smarty.const.SMARTY_IMG_URL}/btn.gif) repeat-x 0px -2168px;
+   }
+   .clicksave{
+		background:url({$smarty.const.SMARTY_IMG_URL}/btn.gif) repeat-x 0px -3240px !important;
+	}
+	.write{
+		cursor: pointer;
+		text-decoration: none !important;
+	}
+	.write:hover{
+		background: url({$smarty.const.SMARTY_IMG_URL}/btn.gif) repeat-x 0px -2168px;
+	}  
+</style>
+</head>
+<body>
+	<div class="container-fluid head_div">
+        <form class="form-inline">
+        	<select name="year" class="year form-control nav_form"></select>
+            <input value="查询" id="btn_select" type="button" class="btn btn-primary btn-sm"/>                                      
+        </form>
+    </div>
+	<!--表格-->
+    <div class="container" style="margin: 10px auto;min-width:680px;">
+        <div class="panel panel-primary">
+			<!--头-->
+			<div class="panel-heading" style="text-align:center;">
+				{$data[0]['dept']}
+			</div>
+			<table class="table table-bordered table-hover">
+	        	<tr class="tr1">
+	        		<th>序号</th>
+	                <th>主题</th>
+	                <th>姓名</th>
+	                <th>填写日期</th>
+	                <th>附件</th> 
+	                <th colspan="2">表单修改</th> 
+	                <th>月汇报</th> 
+	            </tr>
+	            {*再循环每个部门的记录*}  
+	        	{foreach $data as $k=>$v}
+	            <tr>
+	                <td>{$v['number']}</td>
+	                <td class="pre"><a href="{$smarty.const.__CONTROLLER__}/monthpreview/id/{$v['id']}" class="preview" target="_blank">{$v['theme']}</a></td>
+	                <td>{$v['name']}</td>
+	                <td>{$v['writetime']}</td>
+	                {if $v['upload']==null}
+	                <td>无</td>
+	                {else}
+	                <td>
+	                	<a href="{$smarty.const.SELF_URL}/{$v['upload']}">下载</a>
+	                </td>  
+	                {/if}
+	                {*如果禁止的月之前则灰色*}
+	                {if $v['number']-$forbid_time['forbid_week']<=0 }
+	                <td>
+	                	<span class="disable_span">修改</span>
+	                </td> 
+	                <td>
+	                	<span class="disable_span">删除</span>
+	                </td>
+	                {else}  
+	                <td>
+	                	<a href="{$smarty.const.__CONTROLLER__}/monthplan_modify/id/{$v['id']}" class="preview">修改</a>
+	                </td>
+	                <td>
+	                	<a href="#" onclick="del_monthplan({$v['id']})" class="preview">删除</a>
+	                </td>
+	                {/if}  
+	                {*同时锁定上一月的汇报表 201605-201606*} 
+	                {if $v['number']-$forbid_time['forbid_week']<0 } 
+	                <td class="writehb">
+						<span class="disable_span">填写汇报表</span>
+					</td>
+					{else}
+					<td class="writehb">
+						<a href="{$smarty.const.__CONTROLLER__}/monthhb/id/{$v['id']}">填写汇报表</a>
+					</td> 
+					{/if}             
+	            </tr>                    
+	            {/foreach}
+	        </tbody>
+	   	 	</table>
+	    </div>
+	</div>
+</body>
+</html>
+<script src="{$smarty.const.SMARTY_JS_URL}/jquery.min.js"></script>
+<script src="{$smarty.const.SMARTY_JS_URL}/bootstrap.min.js"></script>
+<script src="{$smarty.const.SMARTY_JS_URL}/zxh_public.js"></script>
+<script>
+	/*
+	 * 初始化时间
+	 */
+	$().ready(function(){
+		date();
+	});
+	function date(){
+		var url="{$smarty.const.__CONTROLLER__}/date";
+		$.post(url,{ "1":"1" },function(msg){
+			var get_year="{$smarty.get.year}";
+			if(get_year!=""){
+				now_year=get_year;
+			}else{
+				now_year=msg.now_year;
+			}
+			var arr_year=msg.arr_year;
+			for(var i=2016;i<=2025;i++){
+				var newop=new Option(arr_year[i],i);
+				if(i==now_year){
+					newop.selected="selected";
+				}
+				$('.year')[0].options.add(newop);
+			}
+			
+		},'json');
+	}
+
+	$('.pre,.writehb').mousedown(function(){
+		$(this).addClass('clicksave');
+	});	
+	$('.pre,.writehb').mouseup(function(){
+		$(this).removeClass('clicksave');
+	});	
+	
+	
+	/*
+	 * 删除
+	 */
+	function del_monthplan(id){
+		if(confirm("删除后无法恢复,确认删除吗？")){
+			var url="{$smarty.const.__CONTROLLER__}/monthplan_del/id/{$v['id']}";
+			$.get(url,{ 'id':id },function(msg){
+				if(msg=="true"){
+					location.reload();
+				}
+			});	
+		}else{
+			return false;
+		}
+	}
+	$('#btn_select').bind('click',function(){
+		var select_year=$('.year').val();
+		var url="{$smarty.const.__CONTROLLER__}/monthplanlist/year/"+select_year;
+		window.location=url;
+	})
+</script>
+
+
+
+
+

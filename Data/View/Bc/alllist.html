@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <link rel="icon" href="<?php echo DATA_IMG_URL;?>/vinda.ico">
+    <link rel="stylesheet" type="text/css" href="<?php echo DATA_JS_URL;?>/layui/css/layui.css" />
+    <script type="text/javascript" src="<?php echo DATA_JS_URL;?>/layui/layui.js"></script>
+    <script type="text/javascript" src="<?php echo DATA_JS_URL;?>/jquery-1.11.3.min.js"></script>
+    <title>班产报表</title>
+<style>
+.layui-table{
+  text-align: center;
+}
+.layui-table-header th{
+  text-align: center;
+}
+</style>
+</head>
+<body class="fadeIn animated">
+<div class="layui-tab layui-tab-brief">
+    <include file="Public/nav" /> 
+    
+	  <div class="layui-tab-content">
+	    <div class="layui-tab-item layui-show" id="all">
+       <table id="allData" lay-filter="data"></table> 
+      </div>
+	  </div>
+</div> 
+	
+</body>
+<script>
+  //选项卡、表单
+  layui.use(['element','form'], function(){
+    var element = layui.element,form=layui.form;
+  });
+
+
+var cols=[[
+    {type:'numbers'},
+    {field: 'name', title: '姓名', width:100},
+    {field: 'zhou_num', title: '原纸张轴号', width:150},
+    {field: 'sc_num', title: '生产批号', width:120},
+    {field: 'wg_num', title: '完工单号', width:100},
+    {field: 'date', title: '日期', width:120},
+    {field: 'up_date', title: '下纸时间', width:120},
+    {field: 'cp_class', title: '产品种类', width:285},
+    {field: 'cp_num', title: '产品编码', width:120},
+    {field: 'zhouzhong', title: '轴重', width:120},
+    {field: 'dingliang', title: '定量(g/m3)', width:120},
+    {field: 'jt_num', title: '机台编号', width:90},
+    {field: 'banci', title: '班次', width:70},
+    {field: 'banzu', title: '班组', width:70},
+    {field: 'speed', title: '车速(m/min)', width:120}, 
+    {field: 'guige', title: '规格', width:120},
+    {field: 'juanchang', title: '卷长', width:120},
+    {field: 'maozhong', title: '毛重(kg)', width:120},
+    {field: 'jingzhong', title: '净重(KG)', width:120},
+    {field: 'buhege', title: '不合格重量(KG)', width:120},
+    {field: 'zhijing', title: '直径(mm)', width:100},
+    {field: 'is_hg', title: '是否合格', width:100},
+    {field: 'is_hd', title: '换刀情况', width:100},
+    {field: 'is_dt', title: '断头情况', width:100},
+    {field: 'zz_level', title: '皱纹级别', width:100},
+    {field: 'next', title: '下道工序', width:100},
+    {field: 'bz', title: '备注', width:150},
+  ]];
+
+  layui.use('table',function(){
+    table = layui.table;
+    table.render({
+      elem: '#allData',
+      height: 500,
+      url: '<?php echo U("alldata");?>',
+      page: true, //开启分页
+      request: {
+        limitName: 'pagesize' //每页数据量的参数名
+      },
+      limit:30,       
+      cols: cols
+    });
+
+  });
+
+
+</script>
+</html>

@@ -1,0 +1,90 @@
+<include file="Public/head" /> 
+<link rel="stylesheet" type="text/css" href="<?php echo ADMIN_CSS_URL;?>/hiui/zTree/zTreeStyle/zTreeStyle.css" />
+<style>
+ul.ztree {
+    margin-top: 10px;
+    border: 1px solid #617775;
+    background: #fff;
+    width: 220px;
+    overflow-y: scroll;
+    overflow-x: auto;
+}
+</style>
+</head>
+<body>
+    
+<article class="page-container">
+    <form action="" method="post" class="form form-horizontal" id="form-admin-user-add">
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3">工号：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" name="username" placeholder="请输入工号">
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3">密码：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="password" class="input-text" placeholder="请输入密码" name="password">
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3">姓名：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder="请输入姓名" name="name">
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3">手机：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder="请输入手机号码" name="mobile">
+            </div>
+        </div>
+        <div class="row cl">
+            <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+                <button type="button" class="btn btn-success radius" id="admin-user-add">
+                <i class="icon-ok"></i> 确定</button>
+            </div>
+        </div>
+    </form>
+</article>
+
+<div id="menuContent" class="menuContent" style="display:none; position: absolute;">
+    <ul id="treelist" class="ztree" style="margin-top:0;"></ul>
+</div>
+
+
+
+<include file="Public/foot" /> 
+<script type="text/javascript">
+
+
+
+//确定
+$("#admin-user-add").click(function(){
+    $.post("<?php echo U('user_add');?>",$("#form-admin-user-add").serialize(),function(res){
+        if(res=="1")
+        {
+            layer.msg('添加成功', {
+              icon: 1,
+              time: 1000
+            }, function(){
+               window.parent.window.location.reload();  
+            });       
+        }else{
+            layer.alert(res, {icon: 5});
+        }
+    });     
+});
+/*
+ * checkbox
+ */
+$("#form-admin-user-add input").iCheck({
+    checkboxClass: 'icheckbox-blue',
+    radioClass: 'iradio-blue',
+    increaseArea: '20%'
+});	
+
+
+</script>
+</body>
+</html>

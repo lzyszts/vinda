@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+	<title>计划列表</title>
+	<link href="{$smarty.const.SMARTY_CSS_URL}/mine.css" type="text/css" rel="stylesheet" />
+	<link rel="stylesheet" href="{$smarty.const.SMARTY_CSS_URL}/bootstrap.min.css">  
+	<script src="{$smarty.const.SMARTY_JS_URL}/jquery.min.js"></script>
+	<script type="text/javascript" src="{$smarty.const.SMARTY_JS_URL}/bootstrap.min.js"></script>
+	<style>
+	.table td{
+		text-align:center;
+		font-size: 15px;
+	}
+	.nav-div{
+		width:500px;
+		margin:3px auto;
+	}
+	#down-frame{
+		border: none; 
+		padding: 0px; 
+	}
+	</style>     
+</head>
+<body>
+	<div class="nav-div">
+		<div class="container-fluid">
+			<ul id="nav" class="nav nav-pills">
+			  <li class="active"><a href="{$smarty.const.__MODULE__}/Rzb/showhzlist" target="down-frame">部门表单</a></li>
+			  <li><a href="{$smarty.const.__MODULE__}/Rzb/showhztable" target="down-frame">汇总表单</a></li>
+			  <li><a href="{$smarty.const.__MODULE__}/Rzb/talklist/mark/1" target="down-frame">交流议题</a></li>
+			  <li><a href="{$smarty.const.__MODULE__}/Rzb/decision" target="down-frame">决议事项</a></li>
+			  <li><a href="{$smarty.const.__MODULE__}/Rzb/hz" target="down-frame">数据汇总</a></li>
+			</ul>
+		</div>	
+	</div>
+	<iframe src="{$smarty.const.__MODULE__}/Rzb/showhzlist" id="down-frame" name="down-frame" width="100%" height="100%"></iframe>
+</body>
+</html>
+<script src="{$smarty.const.SMARTY_JS_URL}/zxh_public.js"></script>
+<script>
+	$().ready(function(){
+		keep();
+	});
+	//动态改变iframe高度
+	$(window).resize(keep);
+	function keep(){
+		var iframe_height=$(window).height()-51;
+		$('#down-frame').height(iframe_height);
+	}
+	$('li').click(function(){
+		$(this).addClass('active');
+		$('li').not($(this)).removeClass('active');
+	});
+	
+</script>
+
+
+
+
+

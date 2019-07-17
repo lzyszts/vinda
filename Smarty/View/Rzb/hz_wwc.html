@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+        <meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+        <title>未完成汇总</title>
+        <link href="{$smarty.const.SMARTY_CSS_URL}/mine.css" type="text/css" rel="stylesheet" />
+		<link rel="stylesheet" href="{$smarty.const.SMARTY_CSS_URL}/bootstrap.min.css">
+		<link rel="stylesheet" href="{$smarty.const.SMARTY_CSS_URL}/public.css">
+		<style>
+    	.table td,th{
+    		text-align: center;
+    		vertical-align:middle !important;
+    	}
+    	.add_body,.edit_body{
+    		height:440px;
+    		width:420px;
+    		margin:0 auto;
+    	}
+		.modal-body{
+			padding:0;
+		}
+		.modal-footer{
+			padding:7px;
+		}
+		.form-group{
+			margin-bottom: 8px;
+		}
+
+    </style>
+</head>
+<body>
+	<div class="container-fluid head_div">
+        <form class="form-inline">
+        	<select name="year" class="year form-control nav_form">
+        		<option value="0">请选择</option>
+        	</select>
+            <select name="month"  class="month form-control nav_form">
+            	<option value="0">请选择</option>
+            </select>
+            <select name="week"  class="week form-control nav_form">
+            	<option value="0">请选择</option>
+            </select>
+            <select name="ejmodel"  class="ejmodel form-control nav_form">
+            	<option value="0">请选择</option>
+            </select>
+            <select name="dept"  class="dept form-control nav_form">
+            	<option value="0">请选择部门</option>
+            </select>
+
+			<label class="checkbox-inline">
+			    <input type="checkbox" class="zd" value="0">
+				<font class="text-danger">重点</font>
+			</label>
+            <input value="查询" id="btn_select" type="button" class="btn btn-primary btn-sm" style="margin-left:10px;"/> 
+            <input value="未完成" id="wwc" type="button" class="btn btn-primary btn-sm" />                                  
+        </form>
+    </div>
+	<!--表格-->
+	<div class="container-fluid" style="margin: 25px auto;">	
+		<div class="panel panel-primary">
+			<!--头-->
+			<div class="panel-heading" style="text-align:center;font-size:20px;">
+				汇总列表
+			</div>
+			<!--表格-->
+			<table class="table table-bordered table-hover">
+				<thead>
+					<tr>
+						<th>序号</th>
+						<th>姓名</th>
+						<th>业务模块</th>
+						<th>二级模块</th>
+						<th>结果定义</th>
+						<th>过程</th>
+						<th>状态</th>
+						<th>完成情况</th>
+						<th>未完成原因</th>
+						<th>解决措施</th>
+						<th>重点</th>
+						<th>备注</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody>
+				{foreach $data as $key=>$value}
+				    {foreach $value['xuhao'] as $k=>$v}
+					<tr>
+						{*1、选了业务模块和部门 并且不是重点*}
+						{if $k>0 && isset($ywmodel) && isset($dept) && !isset($zd)}
+							{if $ywmodel==$value['ywmodel'][$k] && $dept==$value['dept'] && $value['jieguo'][$k]=="未完成"}
+							<td>{$value['number']}</td>
+							<td>{$value['name']}</td>
+							<td>{$value['ywmodel'][$k]}</td>
+							<td>{$value['ejmodel'][$k]}</td>
+							<td>{$value['result'][$k]}</td>
+							<td>{$value['statustime'][$k]}</td>
+							<td>{$value['status'][$k]}</td>
+							<td>{$value['jieguo'][$k]}</td>
+							<td>{$value['yuanyin'][$k]}</td>
+							<td>{$value['cuoshi'][$k]}</td>
+							<td>{$value['zd'][$k]}</td>
+							<td>{$value['remark'][$k]}</td>
+							<td>
+								<a href="{$smarty.const.__CONTROLLER__}/preview/id/{$value['id']}" class="preview" target="_black">查看</a>
+							</td>
+							{/if}
+						{/if}
+						{*2、选了业务模块不是重点*}
+						{if $k>0 && isset($ywmodel) && !isset($dept) && !isset($zd)}
+							{if $ywmodel==$value['ywmodel'][$k]&& $value['jieguo'][$k]=="未完成"}
+							<td>{$value['number']}</td>
+							<td>{$value['name']}</td>
+							<td>{$value['ywmodel'][$k]}</td>
+							<td>{$value['ejmodel'][$k]}</td>
+							<td>{$value['result'][$k]}</td>
+							<td>{$value['statustime'][$k]}</td>
+							<td>{$value['status'][$k]}</td>
+							<td>{$value['jieguo'][$k]}</td>
+							<td>{$value['yuanyin'][$k]}</td>
+							<td>{$value['cuoshi'][$k]}</td>
+							<td>{$value['zd'][$k]}</td>
+							<td>{$value['remark'][$k]}</td>
+							<td>
+								<a href="{$smarty.const.__CONTROLLER__}/preview/id/{$value['id']}" class="preview" target="_black">查看</a>
+							</td>
+							{/if}
+						 {/if}
+						{*3、选了部门 并且是重点*}
+						{if $k>0 && !isset($ywmodel) && isset($dept) && isset($zd)}
+							{if $dept==$value['dept'] && {$value['zd'][$k]}=="是" && $value['jieguo'][$k]=="未完成"}
+							<td>{$value['number']}</td>
+							<td>{$value['name']}</td>
+							<td>{$value['ywmodel'][$k]}</td>
+							<td>{$value['ejmodel'][$k]}</td>
+							<td>{$value['result'][$k]}</td>
+							<td>{$value['statustime'][$k]}</td>
+							<td>{$value['status'][$k]}</td>
+							<td>{$value['jieguo'][$k]}</td>
+							<td>{$value['yuanyin'][$k]}</td>
+							<td>{$value['cuoshi'][$k]}</td>
+							<td>{$value['zd'][$k]}</td>
+							<td>{$value['remark'][$k]}</td>
+							<td>
+								<a href="{$smarty.const.__CONTROLLER__}/preview/id/{$value['id']}" class="preview" target="_black">查看</a>
+							</td>
+							{/if}
+						 {/if}
+						{*4、选了业务模块和部门 并且是重点*}
+						{if $k>0 && isset($ywmodel) && isset($dept) && isset($zd)}
+							{if $ywmodel==$value['ywmodel'][$k] && $dept==$value['dept'] && {$value['zd'][$k]}=="是" && $value['jieguo'][$k]=="未完成"}
+							<td>{$value['number']}</td>
+							<td>{$value['name']}</td>
+							<td>{$value['ywmodel'][$k]}</td>
+							<td>{$value['ejmodel'][$k]}</td>
+							<td>{$value['result'][$k]}</td>
+							<td>{$value['statustime'][$k]}</td>
+							<td>{$value['status'][$k]}</td>
+							<td>{$value['jieguo'][$k]}</td>
+							<td>{$value['yuanyin'][$k]}</td>
+							<td>{$value['cuoshi'][$k]}</td>
+							<td>{$value['zd'][$k]}</td>
+							<td>{$value['remark'][$k]}</td>
+							<td>
+								<a href="{$smarty.const.__CONTROLLER__}/preview/id/{$value['id']}" class="preview" target="_black">查看</a>
+							</td>
+							{/if}
+						{/if}
+						{*5、选了业务模块 并且是重点*}
+						{if $k>0 && isset($ywmodel) && !isset($dept) && isset($zd)}
+							{if $ywmodel==$value['ywmodel'][$k] && {$value['zd'][$k]}=="是" && $value['jieguo'][$k]=="未完成"}
+							<td>{$value['number']}</td>
+							<td>{$value['name']}</td>
+							<td>{$value['ywmodel'][$k]}</td>
+							<td>{$value['ejmodel'][$k]}</td>
+							<td>{$value['result'][$k]}</td>
+							<td>{$value['statustime'][$k]}</td>
+							<td>{$value['status'][$k]}</td>
+							<td>{$value['jieguo'][$k]}</td>
+							<td>{$value['yuanyin'][$k]}</td>
+							<td>{$value['cuoshi'][$k]}</td>
+							<td>{$value['zd'][$k]}</td>
+							<td>{$value['remark'][$k]}</td>
+							<td>
+								<a href="{$smarty.const.__CONTROLLER__}/preview/id/{$value['id']}" class="preview" target="_black">查看</a>
+							</td>
+							{/if}
+						 {/if}
+						{*6、选了部门不是重点*}
+						{if $k>0 && !isset($ywmodel) && isset($dept) && !isset($zd) && $value['jieguo'][$k]=="未完成"}
+							{if $dept==$value['dept']}
+							<td>{$value['number']}</td>
+							<td>{$value['name']}</td>
+							<td>{$value['ywmodel'][$k]}</td>
+							<td>{$value['ejmodel'][$k]}</td>
+							<td>{$value['result'][$k]}</td>
+							<td>{$value['statustime'][$k]}</td>
+							<td>{$value['status'][$k]}</td>
+							<td>{$value['jieguo'][$k]}</td>
+							<td>{$value['yuanyin'][$k]}</td>
+							<td>{$value['cuoshi'][$k]}</td>
+							<td>{$value['zd'][$k]}</td>
+							<td>{$value['remark'][$k]}</td>
+							<td>
+								<a href="{$smarty.const.__CONTROLLER__}/preview/id/{$value['id']}" class="preview" target="_black">查看</a>
+							</td>
+							{/if}
+						 {/if}
+						{*7、都没选*}
+						{if $k>0 && !isset($ywmodel) && !isset($dept) && !isset($zd) && $value['jieguo'][$k]=="未完成"}
+							<td>{$value['number']}</td>
+							<td>{$value['name']}</td>
+							<td>{$value['ywmodel'][$k]}</td>
+							<td>{$value['ejmodel'][$k]}</td>
+							<td>{$value['result'][$k]}</td>
+							<td>{$value['statustime'][$k]}</td>
+							<td>{$value['status'][$k]}</td>
+							<td>{$value['jieguo'][$k]}</td>
+							<td>{$value['yuanyin'][$k]}</td>
+							<td>{$value['cuoshi'][$k]}</td>
+							<td>{$value['zd'][$k]}</td>
+							<td>{$value['remark'][$k]}</td>
+							<td>
+								<a href="{$smarty.const.__CONTROLLER__}/preview/id/{$value['id']}" class="preview" target="_black">查看</a>
+							</td>
+						 {/if}
+						{*8、只选了重点*}
+						{if $k>0 && !isset($ywmodel) && !isset($dept) && isset($zd)}
+							{if {$value['zd'][$k]}=="是" && $value['jieguo'][$k]=="未完成"}
+							<td>{$value['number']}</td>
+							<td>{$value['name']}</td>
+							<td>{$value['ywmodel'][$k]}</td>
+							<td>{$value['ejmodel'][$k]}</td>
+							<td>{$value['result'][$k]}</td>
+							<td>{$value['statustime'][$k]}</td>
+							<td>{$value['status'][$k]}</td>
+							<td>{$value['jieguo'][$k]}</td>
+							<td>{$value['yuanyin'][$k]}</td>
+							<td>{$value['cuoshi'][$k]}</td>
+							<td>{$value['zd'][$k]}</td>
+							<td>{$value['remark'][$k]}</td>
+							<td>
+								<a href="{$smarty.const.__CONTROLLER__}/preview/id/{$value['id']}" class="preview" target="_black">查看</a>
+							</td>
+							{/if}
+						 {/if}
+					</tr>
+					{/foreach}
+				{/foreach}
+				</tbody>
+			</table>
+		</div>
+	</div>
+	
+	
+	
+  	<!-- 模态框声明 -->
+	<div class="modal fade" id="add_form" data-backdrop="static">
+		<!-- 窗口声明 -->
+		<div class="modal-dialog sm-lg add_body">
+			<!-- 内容声明 -->
+			<div class="modal-content">
+				<!--上-->
+				<div class="modal-header">
+					<button class="close" data-dismiss="modal"><span>&times;</span></button>
+					<h4 class="modal-title">填写表单</h4>
+				</div>	
+				<!--中-->	
+				<form action="{$smarty.const.__CONTROLLER__}/decision_add" method="post">		
+				<div class="modal-body">
+			        <div class="container-fluid">
+					        <div class="form-group">
+					            <label for="content">内容</label>
+					            <textarea id="content" class="form-control" name="content" placeholder="请输入交流议题内容" rows="2"></textarea>
+					        </div>
+					        <div class="form-group">
+					            <label for="dept">责任人(部门)</label>
+					            <input type="text" id="dept" name="dept" placeholder="请输入责任人或部门" class="form-control">
+					        </div>
+					        <div class="form-group">
+					            <label for="plan_time">计划完成日期</label>
+					            <input type="text" id="plan_time" name="plan_time" class="form-control">
+					        </div>
+					        <div class="form-group">
+					            <label for="end_time">完成情况</label>
+					            <textarea id="end_time" class="form-control" name="end_time" placeholder="请输入完成情况日期及完成情况" rows="2" ></textarea>
+					        </div>
+					        <button type="submit" id="submit_btn" class="btn btn-success btn-block">提交</button>
+					</div>    					
+				</div>
+				<!--下-->
+				<div class="modal-footer">
+				</div>
+				<!--传序号-->
+				<input type="hidden" name="xuhao" value="{$xuhao}"/>
+				<!--传年月周-->
+				<input type="hidden" name="year" value="{$date['year']}"/>
+				<input type="hidden" name="month" value="{$date['month']}"/>
+				<input type="hidden" name="week" value="{$date['week']}"/>
+				</form>
+			</div>
+		</div>
+	</div>
+	
+	
+	
+
+	
+</body>
+</html>
+<script src="{$smarty.const.SMARTY_JS_URL}/jquery.min.js"></script>
+<script src="{$smarty.const.SMARTY_JS_URL}/bootstrap.min.js"></script>
+<script src="{$smarty.const.SMARTY_JS_URL}/zxh_public.js"></script>
+<script>
+	$().ready(function(){
+		date();
+		ywmodel();
+		dept();
+		ck();//初始化勾选的checkbox
+	});
+	function date(){
+		var url="{$smarty.const.__CONTROLLER__}/date";
+		$.post(url,{ "1":"1" },function(msg){
+			var arr_month=msg.arr_month;
+			var get_year="{$smarty.get.year}";
+			var get_month="{$smarty.get.month}";
+			var get_week="{$smarty.get.week}";
+			if(get_year!="" || get_month!=""|| get_week!=""){
+				now_year=get_year;
+				now_month=get_month;
+				now_week=get_week;
+			}else{
+				now_year=msg.now_year;
+				now_month=msg.now_month;
+				now_week=msg.now_week;
+			}
+			for(var i=1;i<arr_month.length;i++){
+				var newop=new Option(arr_month[i],i);
+				if(i==now_month){
+					newop.selected="selected";
+				}
+				$('.month')[0].options.add(newop);
+			}
+			var arr_year=msg.arr_year;
+			for(var i=2016;i<=2025;i++){
+				var newop=new Option(arr_year[i],i);
+				if(i==now_year){
+					newop.selected="selected";
+				}
+				$('.year')[0].options.add(newop);
+			}
+			var arr_week=msg.arr_week;
+			for(var i=0;i<arr_week.length;i++){
+				var newop=new Option(arr_week[i],arr_week[i]);
+				if(arr_week[i]==now_week){
+					newop.selected="selected";
+				}
+				$('.week')[0].options.add(newop);
+			}
+		},'json');
+	}
+	
+	/*
+	 * 初始化业务模块
+	 */
+	function ywmodel(){
+		var arr=['团队管理','客户价值','安全','机制','文化','个人成长','KPI指标','其他业务'];
+		var now_ywmodel="{$smarty.get.ywmodel}";	
+		for(var i=0;i<arr.length;i++){
+			var newop=new Option(arr[i],arr[i]);
+			if(arr[i]==now_ywmodel){
+				newop.selected="selected";
+			}
+			$('.ejmodel')[0].options.add(newop);	
+		}
+	}
+	/*
+	 * 初始化部门
+	*/
+	function dept(){
+		var dept=['采购部','工程技术部','品管部','生产部','人力资源及行政部','仓储科','生产调度科','制造部','安全科'];
+		var now_dept="{$smarty.get.dept}";	
+		for(var i=0;i<dept.length;i++){
+			var text=dept[i];//文本
+			var op =new Option(text,text);
+			if(text==now_dept){
+				op.selected="selected";
+			}
+			$('.dept')[0].options.add(op);//加入selsect
+		}
+	}
+
+	/*
+	 * checkbox
+	 */
+	$(':checkbox').click(function(){
+		var className=$(this).attr('class');//当前class名
+		if(this.checked==true){
+			$(this).attr('value',className);
+		}else{
+			$(this).attr('value','0');
+		}
+		
+	});
+	/*
+	 * 初始化checkbox
+	 */
+	function ck(){
+		var zd="{$smarty.get.zd}";
+		var wwc="{$smarty.get.wwc}";
+		if(zd=="zd"){
+			$('.zd').attr('checked',true).attr('value','zd');  //value改了并且勾选上
+		}
+		if(wwc=="wwc"){
+			$('.wwc').attr('checked',true).attr('value','wwc');
+		}	
+	}
+	
+
+	
+	/*
+	 * 查询
+	 */
+	$('#btn_select').bind('click',function(){
+		var year=$('.year').val();
+		var month=$('.month').val();
+		var week=$('.week').val();
+		var ywmodel=$('.ejmodel').val();
+		var dept=$('.dept').val();
+		var zd=$('.zd').val();
+		var wwc=$('.wwc').val();  //未完成
+		var url="{$smarty.const.__CONTROLLER__}/hz/year/"+year+"/month/"+month+"/week/"+week+"/ywmodel/"+ywmodel+"/dept/"+dept+"/zd/"+zd+"/wwc/"+wwc;
+		window.location=url;
+	});
+	
+	/*
+	 * 未完成
+	 */
+	$('#wwc').click(function(){
+		var year=$('.year').val();
+		var month=$('.month').val();
+		var week=$('.week').val();
+		var ywmodel=$('.ejmodel').val();
+		var dept=$('.dept').val();
+		var zd=$('.zd').val();
+		var url="{$smarty.const.__CONTROLLER__}/hz_wwc/year/"+year+"/month/"+month+"/week/"+week+"/ywmodel/"+ywmodel+"/dept/"+dept+"/zd/"+zd;
+		window.location=url;
+	});
+
+	$(window).resize(keep_body);
+
+</script>
+
+
+
+
+

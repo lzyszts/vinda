@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <link rel="icon" href="<?php echo DATA_IMG_URL;?>/vinda.ico">
+    <link rel="stylesheet" type="text/css" href="<?php echo DATA_JS_URL;?>/layui/css/layui.css" />
+    <script type="text/javascript" src="<?php echo DATA_JS_URL;?>/layui/layui.js"></script>
+    <script type="text/javascript" src="<?php echo DATA_JS_URL;?>/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="<?php echo DATA_JS_URL;?>/echarts.common.min.js"></script>
+    <title>数据分析</title>
+<style>
+#condition{
+  margin-top: 30px;
+}
+.layui-tab-content{
+  margin-bottom: 100px;
+}
+</style>
+</head>
+<body class="fadeIn animated">
+<div class="layui-tab layui-tab-brief">
+    <include file="Public/backnav" /> 
+	  <div class="layui-tab-content">
+      <form class="layui-form" id="condition">
+          <div class="layui-form-item">
+              <div class="layui-inline">
+                  <label class="layui-form-label">时间段：</label>
+                  <div class="layui-input-inline" style="width: 150px;">
+                      <input type="text" class="layui-input" id="date-start" name="date-start" lay-verify="required">
+                  </div>
+                  <div class="layui-form-mid">-</div>
+                  <div class="layui-input-inline" style="width: 150px;">
+                      <input type="text" class="layui-input" id="date-end" name="date-end" lay-verify="required">
+                  </div>
+                  <div class="layui-inline">
+                     <label class="layui-form-label">产品种类：</label> 
+                     <div class="layui-input-inline">
+                          <?php createLayuiSelect('scb_bc_type','cp_class','type_name','type_name');?>
+                     </div>
+                     <div class="layui-inline" style="margin-left: 10px;">
+                          <button class="layui-btn" type="button" id="search" lay-filter="search">搜索</button>
+                     </div>
+                  </div>
+
+              </div>
+          </div>
+      </form>
+        <div class="layui-card">
+            <div class="layui-card-header">数据概览</div>
+            <div class="layui-card-body"> 
+                <div id="main" style="width:100%;height:500px;" class="map"></div>
+                <div id="all" style="width:100%;height:600px;" class="map"></div>
+            </div>
+    	  </div>
+    </div>
+</div> 
+
+</body>
+<script>
+window.onload=function(){
+  creatMap();
+} 
+  //选项卡、表单
+  layui.use(['element','form','laydate'], function(){
+    var element = layui.element,form=layui.form,laydate=layui.laydate;
+    var date=new Date;
+     laydate.render({
+        elem: '#date-start',
+        value: new Date(date.getFullYear(),date.getMonth(), 1)
+      });
+      laydate.render({
+        elem: '#date-end',
+        value:date
+      });    
+  });
+  $("#search").click(function(){
+      $(".tab li").removeClass('layui-this');
+      $(".tab li").eq(0).addClass('layui-this');
+      creatMap();
+  });
+
+  function creatMap(){
+      var startDate=$("#date-start").val();
+      var endDate=$("#date-end").val();
+      var cp_class=$("select[name=cp_class]").val();
+      //单产品总净重图
+      $.ajax({
+           type:"POST",
+           url:"<?php echo U('lineData');?>",
+           data:{'date_start':startDate,'date_end':endDate,'cp_class':cp_class},
+           dataType:"json",
+           success:function(res){
+                var x=[],y=[];
+                //处理结果数组 k是日期，v是数据
+                for(var i in res['data'])
+                {
+                  x.push(i+"号机");
+                  y.push(res['data'][i]);
+                }
+                // 基于准备好的dom，初始化echarts实例
+                var myChart = echarts.init(document.getElementById('main'));
+                // 指定图表的配置项和数据
+                //option1 = null;
+                option0 = {
+                    title: {
+                        text: cp_class+" "+res.date_start+"到"+res.date_end+'总定量图'
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: x
+                    },
+                    yAxis: {
+                        type: 'value'
+                    },
+                    tooltip: {
+                        //鼠标移上去显示
+                        trigger: 'axis',
+                        //显示内容格式化
+                        formatter: function (params) {
+                            var tar = params[0];
+                            return tar.name + '<br/>' + tar.seriesName + ' : ' + tar.value;
+                        }
+                    },
+                    series: [{
+                        name:'总净重KG',
+                        data: y,
+                        type: 'bar',
+                        barWidth : 80,//柱图宽度
+                         //柱的颜色和边框
+                        itemStyle: {
+                            normal: {
+                                barBorderColor: '#25a498',
+                                color: '#7fcac3'
+                            },
+                        },
+                        //图上显示数据
+                        label: {
+                            normal: {
+                                show: true,
+                                position: 'inside'
+                            }
+                        },
+                    }]
+                };
+                // 使用刚指定的配置项和数据显示图表。
+                myChart.setOption(option0);
+              
+           },
+      }); 
+      //所有产品总净重图
+      $.ajax({
+           type:"POST",
+           url:"<?php echo U('cpData');?>",
+           data:{'date_start':startDate,'date_end':endDate},
+           dataType:"json",
+           success:function(res){
+              var x=[],y=[];
+                //处理结果数组 k是产品名，v是数据
+                for(var i in res['data'])
+                {
+                  x.push(i);
+                  y.push(res['data'][i]);
+                }
+                // 基于准备好的dom，初始化echarts实例
+                var myChart = echarts.init(document.getElementById('all'));
+                // 指定图表的配置项和数据
+                //option2 = null;
+                option1 = {
+                    title: {
+                        text: "所有产品"+res.date_start+"到"+res.date_end+'总定量图'
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: x,
+                        axisLabel: {
+                              interval: 0,
+                              formatter: function(params) {
+                                  var newParamsName = ""; // 最终拼接成的字符串
+                                  var paramsNameNumber = params.length; // 实际标签的个数
+                                  var provideNumber = 3; // 每行能显示的字的个数
+                                  var rowNumber = Math.ceil(paramsNameNumber / provideNumber); // 换行的话，需要显示几行，向上取整
+                                  /**
+                                   * 判断标签的个数是否大于规定的个数， 如果大于，则进行换行处理 如果不大于，即等于或小于，就返回原标签
+                                   */
+                                  // 条件等同于rowNumber>1
+                                  if (paramsNameNumber > provideNumber) {
+                                      /** 循环每一行,p表示行 */
+                                      for (var p = 0; p < rowNumber; p++) {
+                                          var tempStr = ""; // 表示每一次截取的字符串
+                                          var start = p * provideNumber; // 开始截取的位置
+                                          var end = start + provideNumber; // 结束截取的位置
+                                          // 此处特殊处理最后一行的索引值
+                                          if (p == rowNumber - 1) {
+                                              // 最后一次不换行
+                                              tempStr = params.substring(start, paramsNameNumber);
+                                          } else {
+                                              // 每一次拼接字符串并换行
+                                              tempStr = params.substring(start, end) + "\n";
+                                          }
+                                          newParamsName += tempStr; // 最终拼成的字符串
+                                      }
+                           
+                                  } else {
+                                      // 将旧标签的值赋给新标签
+                                      newParamsName = params;
+                                  }
+                                  //将最终的字符串返回
+                                  return newParamsName;
+                              },
+                        }
+                    },
+                    yAxis: {
+                        type: 'value'
+                    },
+                    tooltip: {
+                        //鼠标移上去显示
+                        trigger: 'axis',
+                        //显示内容格式化
+                        formatter: function (params) {
+                            var tar = params[0];
+                            return tar.name + '<br/>' + tar.seriesName + ' : ' + tar.value;
+                        }
+                    },
+                    series: [{
+                        name:'总净重KG',
+                        data: y,
+                        type: 'bar',
+                        barMaxWidth : 80,//柱图最大宽度
+                         //柱的颜色和边框
+                        itemStyle: {
+                            normal: {
+                                barBorderColor: '#25a498',
+                                color: '#7fcac3'
+                            },
+                        },
+                        //图上显示数据
+                        label: {
+                            normal: {
+                                show: true,
+                                position: 'inside',
+                            }
+                        },
+                    }]
+                };
+                // 使用刚指定的配置项和数据显示图表。
+                myChart.setOption(option1);
+           }
+      });
+  }
+
+
+
+
+</script>
+</html>

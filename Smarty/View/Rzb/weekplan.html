@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+<link rel="stylesheet" href="{$smarty.const.SMARTY_CSS_URL}/calendar.css">
+<link rel="stylesheet" href="{$smarty.const.SMARTY_CSS_URL}/plan.css">
+<title>质询会表格</title>
+</head>
+<body>
+<form action="{$smarty.const.__CONTROLLER__}/weekplan" method="POST" enctype="multipart/form-data">
+	<table id="out" cellspacing="0" cellpadding="0" border="0">
+		<!--大表第一行基本信息-->
+		<tr>    
+			<td>
+				<table id="userinfo"  cellspacing="0" cellpadding="0" border="0">
+					<thead>
+						<tr>
+							<td colspan="13" class="head">基本信息</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr >
+							<td class="jiben_title">
+								<div class="jiben_title_div">主题:</div>
+							</td>
+							<td  colspan="11" >
+								<input type="text" class="head_zt readonly" value="{$theme}" name="theme" readonly >
+							</td>
+										
+						</tr>
+						<tr>
+							<td class="jiben_title">
+								<div class="jiben_title_div">序号:</div>
+							</td>
+							<td class="jiben_content">
+								<input type="text" value="{$xuhao}" readonly="" name="number" class="jiben_readonly"/>
+							</td>				
+							<td class="jiben_title">填表人:</td>				
+							<td class="jiben_content">
+								<input type="text" value="{$smarty.session.userinfo['name']}" readonly="" name="name" class="jiben_readonly"/>
+							</td>	
+							<td class="jiben_title">部门:</td>	
+							<td class="jiben_content">
+								<input type="text" value="{$smarty.session.userinfo['department']}" readonly="" name="dept" class="jiben_readonly"/>
+							</td>													
+							<td class="jiben_title">填表日期:</td>	
+							<td class="jiben_content">
+								<input type="text" value="{$writedate}"  readonly=""  name="writetime" class="jiben_readonly"/>
+							</td>													
+							<td class="jiben_title">开始日期:</td>	
+							<td class="jiben_content">
+								  <input type="text" id="jiben_time" name="starttime"/>
+								  <div id="jiben_time1"></div>
+							</td>													
+							<td class="jiben_title" >结束日期:</td>	
+							<td class="jiben_content">
+								<input type="text" id="jiben_endtime" name="endtime" />
+								<div id="jiben_endtime1"></div>
+							</td>	
+							<td></td>							
+						</tr>
+						<tr> 
+						</tr>
+					</tbody>
+				</table>
+			</td>
+		</tr>
+		<!--大表第二行保存按钮-->
+		<tr height="40px">
+			<td width="300px">
+				<div class="out_btn">
+					<input type="submit" value="提交" class="jiben_submit"/>
+					<input type="text" class="jiben_filename" readonly/>
+				</div>
+				<span style="display:none;line-height:26px;" id="jiben_warning">
+					<font color="red" style="font-size:16px;">必须填写字段！</font>
+				</span>
+			</td>
+		</tr>
+		<!--大表第四行：周计划表单-->
+		<tr id="week_plan">
+			<td>
+				<div class="con_out">
+					<fieldset>
+					<legend style="margin-left:10px;">周计划表单</legend>
+					<table id="content" cellspacing="0" cellpadding="0" border="0" >
+						<thead>
+							<tr>
+								<td colspan="13" class="head">
+									<div style="height:20px;width:70px;float:left;	cursor:pointer;">
+										<span class="con_add_img1"></span><input type="button" class="con_add" value="新增">
+									</div>	
+									<div style="height:20px;width:70px;float:left;margin-left:5px;	cursor:pointer;">
+										<span class="con_add_img2"></span><input type="button" class="con_del" value="删除">
+									</div>
+									<div style="height:20px;width:70px;float:left;margin-left:5px;	cursor:pointer;">
+										<span class="con_add_img3"></span><input type="button" class="con_moveup" value="上移">
+									</div>
+
+								</td>
+							</tr>
+						</thead>
+						<tbody id="con">
+							<tr class="con_tr1">
+								<td class="con_title" width="30px">
+									<input type="checkbox" id="con_select">
+								</td>
+								<td width="40px">序号</td>
+								<td width="85px">业务模块</td>
+								<td width="400px">二级模块</td>
+								<td width="250px">结果定义</td>
+								<td width="80px">时间</td>
+								<td width="80px">过程</td>
+								<td width="65px">自惩承诺</td>
+								<td width="65px">重点</td>
+								<td sytle="border-right:none;" width="200px">备注</td>
+							</tr>
+							<!--用来装内容的tr-->
+							<tr class="con_tr2 hide">
+								<td>
+									<input type="checkbox" class="ckbox">
+								<td>
+									<!--序号栏-->
+									<input type="text" class="xuhao"readonly name="xuhao[]">
+								</td>
+								<td style="position:relative;">	
+									<!--业务模块和下拉-->
+									<div class="con_model">
+										<input type="text" class="con_md" name="ywmodel[]" >
+									</div>
+									<div class="con_model1">
+										<ul>
+											<li>团队管理</li>
+											<li>客户价值</li>
+											<li>安全</li>
+											<li>机制</li>
+											<li>文化</li>
+											<li>个人成长</li>
+											<li>KPI指标</li>
+											<li>其他业务</li>
+										</ul>
+									</div>
+								</td>
+								<!--二级模块-->
+								<td>								
+									<input type="text" value="" class="con_ejmk" name="ejmodel[]">
+								</td>
+								<!--结果定义-->
+								<td>
+									<input type="text" value="" class="con_jgdy" name="result[]">
+								</td>
+								<!--时间-->
+								<td style="position:relative;">
+									<div class="con_time">
+										<input type="text" name="statustime[]">
+									</div>
+									<div class="con_time1">
+										<ul>
+											<li>周一</li>
+											<li>周二</li>
+											<li>周三</li>
+											<li>周四</li>
+											<li>周五</li>
+											<li>周六</li>
+											<li>周日</li>
+										</ul>
+									</div>
+								</td>		
+								<!--状态-->				
+								<td style="position:relative;">			
+									<div class="con_status">
+										<input type="text" name="status[]">
+									</div>
+									<div class="con_status1">
+										<ul>
+											<li>持续</li>
+											<li>完成</li>
+										</ul>
+									</div>
+								</td>
+								<!--自惩承诺-->								
+								<td>
+									<input type="text" value="5元" class="con_zfcn" name="sf[]">		
+								</td>
+								<!--是否重点-->								
+								<td class="con_sfzd">
+									<input type="checkbox" value="是" name="zd[]">				
+									<input type="checkbox" value="否" name="zd[]" checked="checked" class="hide">				
+								</td>
+								
+								<!--备注-->							
+								<td>
+									<input type="text" value="" class="con_bz" name="remark[]">
+								</td>						
+							</tr>
+						</tbody>
+					</table>
+					</fieldset>
+				</div>	
+
+			</td>
+		</tr>
+		<!--*********************************************************-->
+		<input type="hidden" value="{$smarty.session['userinfo']['samaccountname']}" name="samaccountname">	
+	</table>
+</form>
+<br>
+<br>
+<br>
+<br>
+<script type="text/javascript" src="{$smarty.const.SMARTY_JS_URL}/jquery.min.js"></script>
+<script src="{$smarty.const.SMARTY_JS_URL}/calendar.js"></script> 
+<script>
+	//初始化显示
+	 $().ready(function(){
+	 	var arr=['团队管理','客户价值','安全','机制','文化','个人成长','KPI指标','其他业务'];
+	 	for(i=0;i<arr.length;i++){
+		 	var $newtr=$('#content tr:eq(2)').clone(true);
+		 	//清除隐藏class
+			$newtr.removeClass('hide');
+			//序号栏复制
+			$newtr.find('td:eq(2) input').val(arr[i]);
+			$('#content').append($newtr);
+		}
+		reseatnum();
+	 });
+/*
+ * 日期选择jquery
+ */
+    $('#jiben_time1').calendar({
+        trigger: '#jiben_time',
+        zIndex: 999,
+		format: 'yyyy-mm-dd',
+    });
+    $('#jiben_endtime1').calendar({
+        trigger: '#jiben_endtime',
+        zIndex: 999,
+		format: 'yyyy-mm-dd',
+    });
+</script>
+<script type="text/javascript" src="{$smarty.const.SMARTY_JS_URL}/zxh_plan.js"></script>
+<script src="{$smarty.const.SMARTY_JS_URL}/zxh_public.js"></script>
+</body>
+</html>

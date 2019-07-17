@@ -1,0 +1,12 @@
+<ul class="layui-tab-title">
+    <li <?php if(ACTION_NAME=='index') echo 'class="layui-this"';?> >所有数据</li>
+    <li <?php if(ACTION_NAME=='type') echo 'class="layui-this"';?> >数据维护</li>
+    <li <?php if(ACTION_NAME=='analysis') echo 'class="layui-this"';?> >数据分析</li>
+    <li <?php if(ACTION_NAME=='bb') echo 'class="layui-this"';?> >数据报表</li>
+</ul>
+<script type="text/javascript">
+	$('.layui-tab-title li').click(function(){
+		var arr=['index','type','analysis','bb'];
+		window.location.href=arr[$(this).index()];
+	});
+</script>

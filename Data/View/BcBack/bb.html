@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <link rel="icon" href="<?php echo DATA_IMG_URL;?>/vinda.ico">
+    <link rel="stylesheet" type="text/css" href="<?php echo DATA_JS_URL;?>/layui/css/layui.css" />
+    <script type="text/javascript" src="<?php echo DATA_JS_URL;?>/layui/layui.js"></script>
+    <script type="text/javascript" src="<?php echo DATA_JS_URL;?>/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="<?php echo DATA_JS_URL;?>/echarts.common.min.js"></script>
+    <title>数据报表</title>
+<style>
+#condition{
+  margin-top: 30px;
+}
+.layui-tab-content{
+  margin-bottom: 100px;
+}
+</style>
+</head>
+<body class="fadeIn animated">
+<div class="layui-tab layui-tab-brief">
+    <include file="Public/backnav" /> 
+	  <div class="layui-tab-content">
+        <form class="layui-form" id="condition">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">时间段：</label>
+                    <div class="layui-input-inline" style="width: 150px;">
+                        <input type="text" class="layui-input" id="date_start" name="date_start" lay-verify="required">
+                    </div>
+                    <div class="layui-form-mid">-</div>
+                    <div class="layui-input-inline" style="width: 150px;">
+                        <input type="text" class="layui-input" id="date_end" name="date_end" lay-verify="required">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                  <label class="layui-form-label">财务报表：</label>
+                  <div class="layui-inline">
+                      <button class="layui-btn" type="button" lay-submit id="cw_search" lay-filter="cw_search">查看</button>
+                  </div>
+                  <div class="layui-inline">
+                      <button class="layui-btn" type="button" id="tb1" lay-filter="tb1">导出</button>
+                  </div>
+                </div>
+            </div>
+        </form>
+        <div class="layui-tab-content">
+          <div class="layui-tab-item layui-show">
+            <table id="cwData" lay-filter="cwData"></table> 
+          </div>
+        </div>
+    </div>
+</div> 
+
+<script type="text/html" id="toolbar">
+  <div class="layui-btn-container">
+    <button class="layui-btn layui-btn-sm" lay-event="lock">锁定</button>
+    <button class="layui-btn layui-btn-sm" lay-event="unlock">解锁</button>
+  </div>
+</script>
+<script type="text/html" id="is_lock">
+    {{#  if(d.is_lock == '1'){ }}
+    <span style="color: #dc5236;">已锁定</span>
+    {{#  } }}
+</script>
+
+</body>
+<script>
+  //选项卡、表单
+  layui.use(['element','form','laydate','table'], function(){
+    var element = layui.element,form=layui.form,laydate=layui.laydate,table = layui.table;;
+    var date=new Date;
+     laydate.render({
+        elem: '#date_start',
+        value: new Date(date.getFullYear(),date.getMonth(), 1)
+      });
+      laydate.render({
+        elem: '#date_end',
+        value:date
+      }); 
+      table = layui.table;
+      table.render({
+          elem: '#cwData',
+          toolbar: '#toolbar',
+          cols: cols,
+          url: '<?php echo U("cw_search");?>',
+          where: { 
+            date_start:$("#date_start").val(),
+            date_end:$("#date_end").val(),
+          },
+          height: 450,
+          limit:30,  
+      }); 
+      //锁定解锁
+      table.on('toolbar(cwData)', function(obj){
+        var checkStatus = table.checkStatus(obj.config.id);
+        //完工单号数组
+        var wg_nums=[];
+        for(var i=0;i<checkStatus.data.length;i++)
+        {
+          wg_nums.push(checkStatus.data[i]['wg_num']);
+        }
+        switch(obj.event){
+          case 'lock':
+              $.post("<?php echo U('lock_data');?>",{"state":"lock","wg_nums":wg_nums},function(res){
+                  if(res>=1)
+                  {
+                    layer.msg('锁定成功', {
+                      icon: 1,
+                      time: 1000
+                    }, function(){
+                      layer.closeAll();
+                      table.reload('cwData');
+                    });   
+                  }else{
+                     layer.alert(res,{icon:2});
+                  }
+              });
+          break;
+          case 'unlock':
+            $.post("<?php echo U('lock_data');?>",{"state":"unlock","wg_nums":wg_nums},function(res){
+                if(res>=1)
+                {
+                  layer.msg('解锁成功', {
+                    icon: 1,
+                    time: 1000
+                  }, function(){
+                    layer.closeAll();
+                    table.reload('cwData');
+                  });   
+                }else{
+                   layer.alert(res,{icon:2});
+                }
+            });
+          break;
+        };
+      });
+      //搜索
+      form.on('submit(cw_search)',function(data){
+        table.render({
+            elem: '#cwData',
+            toolbar: '#toolbar',
+            cols: cols,
+            url: '<?php echo U("cw_search");?>',
+            where: { 
+              date_start:$("#date_start").val(),
+              date_end:$("#date_end").val(),
+            },
+            height: 450,
+            limit:30,  
+        }); 
+      });
+
+  });
+
+//表格
+var cols=[[ //表头
+    {type: 'checkbox', fixed: 'left'},
+    {type:'numbers'},
+    {field:'is_lock', title:'是否锁定', width:88, templet: '#is_lock', unresize: true},
+    {field: 'date', title: '日期', width:120},
+    {field: 'banci', title: '班次', width:70},
+    {field: 'banzu', title: '班组', width:70},
+    {field: 'jt_num', title: '机台', width:90},
+    {field: 'sc_num', title: '生产批号', width:120},
+    {field: 'wg_num', title: '完工单号', width:100},
+    {field: 'juanzhou', title: '卷轴数', width:80},
+    {field: 'cp_class', title: '产品种类', width:285},
+    {field: 'cp_num', title: '产品编码', width:120},
+    {field: 'is_dt', title: '断头总数', width:120},
+    {field: 'is_hd', title: '换刀情况', width:100},
+    {field: 'next', title: '下道工序', width:100},
+    {field: 'zz_level_A', title: '皱纹级别A', width:100},
+    {field: 'zz_level_B', title: '皱纹级别B', width:100},
+    {field: 'zz_level_C', title: '皱纹级别C', width:100},
+    {field: 'jingzhong', title: '合格纸重KG', width:150},
+  ]];
+
+
+
+
+
+
+  //范丽所需的表单导出
+  $("#tb1").click(function(){
+    var startDate=$("#date_start").val();
+    var endDate=$("#date_end").val();
+    if($.trim(startDate)=="" || $.trim(endDate)=="")
+    {
+        layer.alert("开始或结束时间段不能为空",{icon:2});
+        return false;
+    }
+    var msg="导出"+startDate+"到"+endDate+"数据吗？";
+    layer.confirm(msg, function(){
+         $.post("<?php echo U('export_cw');?>",{'date_start':startDate,'date_end':endDate},function(res){
+           layer.closeAll();
+           var url="<?php echo SELF_URL;?>"+res.url;
+           layer.open({
+              type: 1,
+              skin: 'layui-layer-rim',
+              title:'下载地址',
+              area: ['300px', '150px'], //宽高
+              content: '<a href="'+url+'">'+res.filename+'</a>'
+            });
+         },'json').error(function(res){
+            layer.alert(res.responseText,{icon: 2, area: ['1300px', '1000px']});
+         });
+      });
+  });
+
+
+
+
+
+
+
+
+</script>
+</html>

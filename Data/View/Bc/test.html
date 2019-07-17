@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <link rel="icon" href="<?php echo DATA_IMG_URL;?>/vinda.ico">
+    <link rel="stylesheet" type="text/css" href="<?php echo DATA_JS_URL;?>/layui/css/layui.css" />
+    <script type="text/javascript" src="<?php echo DATA_JS_URL;?>/layui/layui.js"></script>
+    <script type="text/javascript" src="<?php echo DATA_JS_URL;?>/jquery-1.11.3.min.js"></script>
+    <title>班产报表</title>
+<style>
+</style>
+</head>
+<body class="fadeIn">
+
+  <form class="layui-form"> <!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
+  <div class="layui-form-item">
+    <label class="layui-form-label">输入框</label>
+    <div class="layui-input-block">
+      <input type="text" name="" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <div class="layui-input-block">
+      <button class="layui-btn" lay-submit lay-filter="*">立即提交</button>
+      <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+    </div>
+  </div>
+</form>
+	
+</body>
+<script type="text/html" id="bar">
+  <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+<script>
+//选项卡、表单
+layui.use(['element','form','laydate'], function(){
+  var element = layui.element,form=layui.form,laydate =layui.laydate;
+  //提交
+  form.on('submit(*)', function(data){
+    var form = layui.form;
+    return false; //阻止表单跳转。
+  });
+
+
+});
+
+
+
+</script>
+</html>

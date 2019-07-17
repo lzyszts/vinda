@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+        <meta name="renderer" content="webkit">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+        <title>质询会汇总列表</title>
+        <link href="{$smarty.const.SMARTY_CSS_URL}/mine.css" type="text/css" rel="stylesheet" />
+        <link rel="stylesheet" href="{$smarty.const.SMARTY_CSS_URL}/bootstrap.min.css">
+        <link href="{$smarty.const.SMARTY_CSS_URL}/mobiscroll.2.13.2.css" rel="stylesheet">
+        <link href="{$smarty.const.SMARTY_CSS_URL}/public.css" rel="stylesheet">
+    </head>
+    <body>
+    <style>
+       a{
+		text-decoration: none !important;
+       }
+       td,th{
+       	text-align: center;
+       }
+       .pre:hover{
+       background: url({$smarty.const.SMARTY_IMG_URL}/btn.gif) repeat-x 0px -2168px;
+       }
+       .clicksave{
+			background:url({$smarty.const.SMARTY_IMG_URL}/btn.gif) repeat-x 0px -3240px !important;
+		}
+		.clock_body{
+			height:250px;
+		}
+		.lzy{
+			background-color:#fff !important;
+			width: 90% !important;
+		}
+		.error_div{
+			text-align:center;
+			position:relative;
+			margin-bottom:0;
+			z-index:1051;
+		}
+		.clock_year,.clock_month,.clock_week{
+			width:85% !important;
+		}
+		.lzy{
+			width:80% !important;
+		}
+		.center_div1,.center_div2{
+			margin:10px auto;
+		}
+    </style>
+    	<div class="container-fluid head_div">
+            <form class="form-inline">
+            	 <select name="year" class="year form-control nav_form" >
+                        <option selected="selected" value="0">请选择</option>
+                    </select>
+                <select name="month"  class="month form-control nav_form">
+                    <option selected="selected" value="0">请选择</option>
+                </select>
+                <input value="查询" id="btn_select" type="button" class="btn btn-primary btn-sm"/> 
+                <input value="锁定(周)" id="btn_clock" type="button" class="btn btn-primary btn-sm"/>
+                <input value="锁定(月)" id="btn_clockm" type="button" class="btn btn-primary btn-sm"/>
+                <span id="clock_info"></span>                                         
+            </form>
+        </div>
+        {*先循环部门*}  
+        {foreach $data as $dept=>$value}
+       	<div class="container" style="margin: 10px auto;min-width:680px;">
+        <div class="panel panel-info">
+			<!--头-->
+			<div class="panel-heading" style="text-align:center;">
+				{$dept}
+			</div>	      	
+			<table class="table table-bordered table-hover">
+                	<tr>
+                		<th>序号</th>
+                        <th>主题</th>
+                        <th>汇报表</th>
+                        <th>姓名</th>
+                        <th>填写日期</th>
+                        <th>附件</th> 
+                        <th colspan="2">修改表单</th> 
+                    </tr>
+                    {*再循环每个部门的记录*}  
+                	{foreach $value as $k=>$v}
+                    <tr>
+                        <td>{$v['number']}</td>
+                        <td class="pre"><a href="{$smarty.const.__CONTROLLER__}/preview/id/{$v['id']}/redirect/showhzlist"  target="_blank" class="preview">{$v['theme']}</a></td>
+                        {*看填写汇报表没有*}
+                        {if $v['hb']!=""}
+                        <td>
+                        	<span class="glyphicon glyphicon-ok text-success"></span>
+                        </td>
+                        {else}
+                        <td><span class="glyphicon glyphicon-remove text-danger"></span></td>
+                        {/if}
+                        <td>{$v['name']}</td>
+                        <td>{$v['writetime']}</td>
+                        {if $v['upload']==null}
+                        <td>无</td>
+                        {else}
+                        <td>
+                        	<a href="{$smarty.const.SELF_URL}/{$v['upload']}">下载</a>
+                        </td>  
+                        {/if}
+                        {*如果在设定的禁止填写的时间段之前或者在禁止的周之前则灰色*}
+                   		{if $v['time_stamp']-$forbid_time['forbid_timestamp']<0 || $v['number']-$forbid_time['forbid_week']<=0 }
+                        <td>
+                    		<span class="disable_span">修改</span>
+	                    </td> 
+	                    <td>
+	                    	<span class="disable_span">删除</span>
+	                    </td>
+	                    {else}
+                        <td>
+                        	<a href="{$smarty.const.__CONTROLLER__}/weekplan_modify/id/{$v['id']}/redirect/showhzlist">修改</a>
+                        </td>
+                        <td>
+                        	<a href="#" onclick="del_weekplan({$v['id']})" >删除</a>
+                        </td>             
+                    </tr>
+                    {/if}                    
+                    {/foreach}
+                 	{*再循环部门月汇总表记录*}
+                    {foreach $month_data as $m_key=>$m_value}
+	                    {if $m_value['dept']==$dept}
+	                    <tr>
+	                    	<td >
+	                    		<font color="red">部门月汇总表</font>
+	                    	</td>
+	                    	<td colspan="7">
+	                    		
+	                    	</td>
+	                    </tr>
+	                    <tr>
+	                        <td>{$m_value['number']}</td>
+	                        <td class="pre"><a href="{$smarty.const.__CONTROLLER__}/monthpreview/id/{$m_value['id']}/redirect/showhzlist" class="preview" target="_blank">{$m_value['theme']}</a></td>
+	                        {*看填写汇报表没有*}
+	                        {if $m_value['hb']!=""}
+	                        <td>
+	                        	<span class="glyphicon glyphicon-ok text-success"></span>
+	                        </td>
+	                        {else}
+	                        <td><span class="glyphicon glyphicon-remove text-danger"></span></td>
+	                        {/if}
+	                        <td>{$m_value['name']}</td>
+	                        <td>{$m_value['writetime']}</td>
+	                        {if $m_value['upload']==null}
+	                        <td>无</td>
+	                        {else}
+	                        <td>
+	                        	<a href="{$smarty.const.SELF_URL}/{$m_value['upload']}">下载</a>
+	                        </td>  
+	                        {/if}
+	                        {*如果禁止的月之前则灰色*}
+	               	 		{if $m_value['number']-$month_forbid_time['forbid_week']<=0 } 
+	               	 		<td>
+			                	<span class="disable_span">修改</span>
+			                </td> 
+			                <td>
+			                	<span class="disable_span">删除</span>
+			                </td>
+			                {else}
+	                        <td>
+                        	<a href="{$smarty.const.__CONTROLLER__}/monthplan_modify/id/{$m_value['id']}/redirect/showhzlist">修改</a>
+	                        </td>
+	                        <td>
+	                        	<a href="#" onclick="del_monthplan({$m_value['id']})" >删除</a>
+	                        </td>
+	                        {/if}                   
+	                    </tr>
+	                    {/if}
+                    {/foreach}
+                </tbody>
+            </table>
+           </div>
+		</div>
+       {/foreach}
+       
+       <!-- 周锁定框 -->
+		<div class="modal fade" id="clock" tabindex="-1" data-backdrop="static">
+			<div class="modal-dialog clock_body">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button class="close" data-dismiss="modal"><span>&times;</span></button>
+						<h4 class="modal-title">请选择周报表锁定时间</h4>
+					</div>
+					
+					<!--中-->
+					<div class="modal-body">
+						<div class="row center_div1 form-inline">	
+							<label>时间:</label>						
+							<div class="settings" style="display:none;">			
+					          <select name="demo" id="demo">
+					              <option value="date">日期</option>
+					          </select>
+					        </div>
+	    					<input name="test" id="tests" class="demo-test-date demo-test-datetime demo-test-time demo-test-credit form-control lzy" />
+						</div>
+						<!--生成年月周-->
+        				<div class="row center_div2">
+    						<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 form-inline ">
+								<label>年:</label>
+								<select class="form-control clock_year">
+									<option>请选择</option>
+								</select>
+							</div>
+							<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 form-inline ">
+								<label>月:</label>
+								<select class="form-control clock_month">
+									<option>请选择</option>
+								</select>
+							</div>				
+							<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 form-inline">
+								<label>周:</label>
+								<select class="form-control clock_week">
+									<option>请选择</option>
+								</select>
+							</div>
+        				</div>
+					</div>
+					<!--下-->
+					<div class="modal-footer">
+						<button class="btn btn-default" id="clock_btn">锁定</button>
+					</div>
+					<div id="time"></div>	
+					<!--成功提示框-->
+					<div class="alert alert-success error_div"  id="error_div">
+						<span class="error_info"></span>
+						<button type="button" class="close"> 
+							<span>&times;</span>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		
+       <!-- 月锁定弹出框 -->
+		<!-- 模态框声明 -->
+		<div class="modal fade" id="clockm" tabindex="-1" data-backdrop="static">
+			<!-- 窗口声明 -->
+			<div class="modal-dialog clock_body">
+				<!-- 内容声明 -->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button class="close" data-dismiss="modal"><span>&times;</span></button>
+						<h4 class="modal-title">请选择月报表锁定时间</h4>
+					</div>
+					<!--中-->
+					<div class="modal-body">
+						<!--生成年月周-->
+        				<div class="row center_div2">
+    						<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 form-inline ">
+								<label>年:</label>
+								<select class="form-control clock_year lzy">
+									<option>请选择</option>
+								</select>
+							</div>
+							<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 form-inline ">
+								<label>月:</label>
+								<select class="form-control clock_month lzy">
+									<option>请选择</option>
+								</select>
+							</div>				
+        				</div>
+					</div>
+					<!--下-->
+					<div class="modal-footer">
+						<button class="btn btn-default" id="clock_btnm">锁定</button>
+					</div>
+					<div id="timem"></div>	
+					<!--成功提示框-->
+					<div class="alert alert-success error_div"  id="error_divm">
+						<span class="error_info"></span>
+						<button type="button" class="close"> 
+							<span>&times;</span>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+				
+
+</body>
+</html>
+<script src="{$smarty.const.SMARTY_JS_URL}/jquery.min.js"></script>
+<script src="{$smarty.const.SMARTY_JS_URL}/bootstrap.min.js"></script>
+<script src="{$smarty.const.SMARTY_JS_URL}/mobiscroll.2.13.2.js"></script>
+<script src="{$smarty.const.SMARTY_JS_URL}/zxh_public.js"></script>
+<script>
+	/*
+	 * 初始化
+	 */
+	$().ready(function(){
+		date();
+		time();
+		clock_info();
+		$('.error_div').hide();
+	});
+	
+	function keep(){
+		var body_height=$('#clock').height();
+		var clock_height=$('.clock_body').height();
+		var new_margin_top=(body_height-clock_height)/2;
+		$('.clock_body').css('margin-top',new_margin_top);
+	}
+	function keepm(){
+		var body_height=$('#clockm').height();
+		var clock_height=$('.clock_body').height();
+		var new_margin_top=(body_height-clock_height)/2;
+		$('.clock_body').css('margin-top',new_margin_top);
+	}
+	
+	/*
+	 * 窗口变化保持
+	 */
+	$(window).resize(keep);
+
+	/*
+	 * 查询
+	 */
+	$('#btn_select').bind('click',function(){
+		var select_year=$('.year').val();
+		var select_month=$('.month').val();
+		var url="{$smarty.const.__CONTROLLER__}/showhzlist/year/"+select_year+"/month/"+select_month;
+		window.location=url;
+	})
+	/*
+	 * 周删除
+	 */
+	function del_weekplan(id){
+		if(confirm("删除后无法恢复,确认删除吗？")){
+			var url="{$smarty.const.__CONTROLLER__}/weekplan_del/id/{$v['id']}";
+			$.get(url,{ 'id':id },function(msg){
+				if(msg=="true"){
+					location.reload();
+				}
+			});	
+		}else{
+			return false;
+		}
+	}
+	/*
+	 * 月删除
+	 */
+	function del_monthplan(id){
+		if(confirm("删除后无法恢复,确认删除吗？")){
+			var url="{$smarty.const.__CONTROLLER__}/monthplan_del/id/{$m_value['id']}";
+			$.get(url,{ 'id':id },function(msg){
+				if(msg=="true"){
+					location.reload();
+				}
+			});	
+		}else{
+			return false;
+		}
+	}
+
+	
+	/*
+	 * 周锁定
+	 */
+	$('#btn_clock').click(function(){
+		keep(); 
+		$('#clock').modal('show');
+		date2();
+	});
+	/*
+	 * 月锁定
+	 */
+	$('#btn_clockm').click(function(){
+		keepm(); 
+		$('#clockm').modal('show');
+		date3();
+	});
+	
+	/*
+	 * 提交周锁定
+	 */
+	$('#clock_btn').click(function(){
+		var clock_time=$('#tests').val();
+		if(clock_time==""){
+			$('.error_div').removeClass('alert-success').addClass('alert-danger');
+			var theme="时间必须填写";
+			$('.error_div').fadeIn(200);
+			$('.error_info').text("");
+			$('.error_info').prepend(theme);
+			return false;
+		}else{
+			//提交锁定的时间和周
+			var url="{$smarty.const.__CONTROLLER__}/forbid_timestamp";
+			var year=$('.clock_year').val();
+			var month=$('.clock_month').val();
+			var week=$('.clock_week').val();
+			var data={
+				"forbid_timestap":clock_time,
+				"year":year,			 
+				"month":month,			 
+				"week":week		 
+			};
+			$.post(url,data,function(msg){
+				if(msg=="success"){	
+					$('.error_div').removeClass('alert-danger').addClass('alert-success');
+					var theme="锁定成功";
+					$('.error_div').fadeIn(200);
+					$('.error_info').text("");
+					$('.error_info').prepend(theme);
+				}
+			});
+		}
+	});		
+	
+
+	/*
+	 * 提交月锁定
+	 */
+	$('#clock_btnm').click(function(){
+		var url="{$smarty.const.__CONTROLLER__}/forbid_timestamp_month";
+		var year=$('.clock_year')[1].value;
+		var month=$('.clock_month')[1].value;
+		var data={
+			"year":year,			 
+			"month":month		 	 
+		};
+		$.post(url,data,function(msg){
+			if(msg=="success"){	
+				$('.error_div').removeClass('alert-danger').addClass('alert-success');
+				var theme="锁定成功";
+				$('.error_div').fadeIn(200);
+				$('.error_info').text("");
+				$('.error_info').prepend(theme);
+			}
+		});
+	});		
+	
+	
+
+	$('.close').click(function(){
+		$('.error_div').fadeOut(200);
+	});
+	
+	/*
+	 * 显示锁定日期
+	 */
+	function clock_info(){
+		var url="{$smarty.const.__CONTROLLER__}/clock_info";
+		$.get(url,function(msg){
+			$('#clock_info').html(msg);
+		});	
+	}
+
+	/*
+	 * 弹出的滚动时间
+	 */
+  	function time(){
+            var curr = new Date().getFullYear();
+            var opt={ };
+			opt.date = { preset : 'date' };
+			opt.datetime = { preset : 'datetime' };
+			opt.time = { preset : 'time' };
+
+          opt.default = {
+				theme: 'android-holo light', //皮肤样式
+		        display: 'modal', //显示方式 
+		        mode: 'scroller', //日期选择模式
+				dateFormat: 'yyyy-mm-dd',
+				lang: 'zh',
+				showNow: true,
+				nowText: "今天",
+				stepMinute: 5,
+		        startYear: curr - 5, //开始年份
+		        endYear: curr + 5 //结束年份
+			};
+            $('.settings').bind('change', function() {
+                var demo = 'datetime';
+                if (!demo.match(/select/i)) {
+                    $('.demo-test-' + demo).val('');
+                }
+                $('.demo-test-' + demo).scroller('destroy').scroller($.extend(opt['datetime'], opt['default']));
+                $('.demo').hide();
+                $('.demo-' + demo).show();
+            });
+            $('#demo').trigger('change');
+ 
+	}
+	
+	/*
+	 * 服务器返回时间
+	 */
+	function date(){
+		var url="{$smarty.const.__CONTROLLER__}/date";
+		$.post(url,{ "1":"1" },function(msg){
+			var arr_month=msg.arr_month;//月份数组
+			var get_year="{$smarty.get.year}";
+			var get_month="{$smarty.get.month}";
+			if(get_year!="" || get_month!=""){
+				now_year=get_year;
+				now_month=get_month;
+			}else{
+				now_year=msg.now_year;
+				now_month=msg.now_month;
+			}
+			for(var i=1;i<arr_month.length;i++){
+				var newop=new Option(arr_month[i],i);
+				if(i==now_month){
+					newop.selected="selected";
+				}
+				$('.month')[0].options.add(newop);
+			}
+			//生成年
+			var arr_year=msg.arr_year;
+			for(var i=2016;i<=2025;i++){
+				var newop=new Option(arr_year[i],i);
+				if(i==now_year){
+					newop.selected="selected";
+				}
+				$('.year')[0].options.add(newop);
+			}
+		},'json');
+	}
+	
+	/*
+	 * 服务器返回时间生成周锁定时间下拉
+	 */
+	function date2(){
+		//先清空select选项
+		$('.clock_year')[0].length=0;
+		$('.clock_month')[0].length=0;
+		$('.clock_week')[0].length=0;
+		
+		var url="{$smarty.const.__CONTROLLER__}/date";
+		$.post(url,{ "1":"1" },function(msg){
+			var arr_month=msg.arr_month;
+			var get_year="{$smarty.get.year}";
+			var get_month="{$smarty.get.month}";
+			if(get_year!="" || get_month!=""){
+				now_year=get_year;
+				now_month=get_month;
+			}else{
+				now_year=msg.now_year;
+				now_month=msg.now_month;
+			}
+			for(var i=1;i<arr_month.length;i++){
+				var newop=new Option(arr_month[i],i);
+				if(i==now_month){
+					newop.selected="selected";
+				}
+				$('.clock_month')[0].options.add(newop);
+			}
+			var arr_year=msg.arr_year;
+			for(var i=2016;i<=2025;i++){
+				var newop=new Option(arr_year[i],i);
+				if(i==now_year){
+					newop.selected="selected";
+				}
+				$('.clock_year')[0].options.add(newop);
+			}
+			var arr_week=msg.arr_week;
+			for(var i=0;i<arr_week.length;i++){
+				var newop=new Option(arr_week[i],arr_week[i]);
+				if(arr_week[i]==msg.now_week){
+					newop.selected="selected";
+				}
+				$('.clock_week')[0].options.add(newop);
+			}
+		},'json');
+	}
+	/*
+	 * 返回时间生成月锁定时间下拉
+	 */
+	function date3(){
+		//先清空select选项
+		$('.clock_year')[1].length=0;
+		$('.clock_month')[1].length=0;	
+		var url="{$smarty.const.__CONTROLLER__}/date";
+		$.post(url,{ "1":"1" },function(msg){
+			var arr_month=msg.arr_month;
+			var get_year="{$smarty.get.year}";
+			var get_month="{$smarty.get.month}";
+			if(get_year!="" || get_month!=""){
+				now_year=get_year;
+				now_month=get_month;
+			}else{
+				now_year=msg.now_year;
+				now_month=msg.now_month;
+			}
+			for(var i=1;i<arr_month.length;i++){
+				var newop=new Option(arr_month[i],i);
+				if(i==now_month){
+					newop.selected="selected";
+				}
+				$('.clock_month')[1].options.add(newop);
+			}
+			var arr_year=msg.arr_year;
+			for(var i=2016;i<=2025;i++){
+				var newop=new Option(arr_year[i],i);
+				if(i==now_year){
+					newop.selected="selected";
+				}
+				$('.clock_year')[1].options.add(newop);
+			}
+		},'json');
+	}
+	
+	
+
+	/*
+	 * 时间选择框填写时候后生成年月周
+	 */
+	$('#tests').change(function(){
+		var date=$('#tests').val();
+		var year=date.substring(0,4);  //2016
+		var month=date.substring(5,7); //6
+		month=parseInt(month);
+		var day=date.substring(8,10);//28
+		//转换为第几周
+		var arr_num=Math.ceil(day/7)-1;
+        var arr_week=["第一周","第二周","第三周","第四周","第五周"];
+        var week=arr_week[arr_num]; 
+		//选定年
+		for(var i=0;i<$('.clock_year option').length;i++){
+			if($('.clock_year option')[i].value==year){
+				$('.clock_year option')[i].selected="selected";
+			}
+		}
+		//选定月
+		for(var i=0;i<$('.clock_month option').length;i++){
+			if($('.clock_month option')[i].value==month){
+				$('.clock_month option')[i].selected="selected";
+			}
+		}
+		//选定周
+		for(var i=0;i<$('.clock_week option').length;i++){
+			if($('.clock_week option')[i].value==week){
+				$('.clock_week option')[i].selected="selected";
+			}
+		}
+	});
+	
+	
+</script>
+
+
+
+
+
+
+

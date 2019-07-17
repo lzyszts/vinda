@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+    <title>时间选择</title>
+	<link rel="stylesheet" href="{$smarty.const.SMARTY_CSS_URL}/bootstrap.min.css">
+	<style>
+	*{
+		font-family: "微软雅黑";
+	}
+	body{
+		background:url({$smarty.const.SMARTY_IMG_URL}/login_bg.gif) repeat-x;
+		width: 100%;
+		height: 100%;
+	}
+	/*登录框整体*/
+	.login_div{
+		width:550px;
+		height:300px;
+		margin:0 auto;
+	}
+	/*登录框头*/
+	.login_head{
+		color:white;
+		background:#006DCC;
+	}
+	.login_body{
+		padding:20px 0;
+	}
+	.login_body label{
+		line-height:34px;
+		width:10%;
+	}
+	.login_body select{
+		width:85% !important;
+		padding:0;
+	}
+	
+	.lzy {
+		padding-left:4px;
+		padding-right:4px;
+	}
+	.login_btn{
+		margin-right:45%;
+	}
+	.error_div{
+		text-align:center;
+		position:relative;
+		margin-bottom:0;
+		z-index:1051;
+	}
+
+	</style>
+</head>
+<body style="border-top:1px #1c94c4 solid">
+	<!-- 模态框声明 -->
+	<div class="modal show" id="myModal" data-backdrop="static">
+		<!-- 窗口声明 -->
+		<div class="modal-dialog sm-lg login_div">
+			<!-- 内容声明 -->
+			<div class="modal-content">
+				<!--上-->
+				<div class="modal-header login_head">
+					<h4 class="modal-title">请先选择时间</h4>
+				</div>	
+				<!--中-->			
+				<div class="modal-body login_body">
+					<form action="{$smarty.const.__CONTROLLER__}/talklist" method="post">
+						<div class="container-fluid">
+							<div class="row"> 
+								<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 form-inline lzy">
+									<label>年:</label>
+									<select class="form-control year">
+									</select>
+								</div>
+								<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 form-inline lzy">
+									<label>月:</label>
+									<select class="form-control month">
+									</select>
+								</div>				
+								<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 form-inline lzy">
+									<label>周:</label>
+									<select class="form-control week">
+									</select>
+								</div>
+							</div>				
+						</div>				
+					</form>
+				</div>
+				<!--下-->
+				<div class="modal-footer">
+					<button class="btn btn-primary login_btn" id="create_weekplan">生成表单</button>
+				</div>
+				
+				<!--错误提示框-->
+				<div class="alert alert-danger error_div"  id="error_div">
+					<span class="error_info"></span>
+					<button type="button" class="close"> 
+						<span>&times;</span>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+<script src="{$smarty.const.SMARTY_JS_URL}/jquery.min.js"></script>
+<script src="{$smarty.const.SMARTY_JS_URL}/bootstrap.min.js"></script>
+<script src="{$smarty.const.SMARTY_JS_URL}/zxh_public.js"></script>
+<script>
+	$().ready(function(){
+		keep();
+		date();
+		$('.error_div').hide();
+	});	
+	/*
+	 * 窗口保持
+	 */
+	$(window).resize(keep);
+	function keep(){
+		var body_height=$('#myModal').height();
+		var login_height=$('.login_div').height();
+		var new_margin_top=(body_height-login_height)/2;
+		$('.login_div').css('margin-top',new_margin_top);
+	}
+	
+	
+	/*
+	 * 返回时间
+	 */
+	function date(){
+		var url="{$smarty.const.__CONTROLLER__}/date";
+		$.post(url,{ "1":"1" },function(msg){
+			var arr_month=msg.arr_month;
+			for(var i=1;i<arr_month.length;i++){
+				var newop=new Option(arr_month[i],i);
+				if(i==msg.now_month){
+					newop.selected="selected";
+				}
+				$('.month')[0].options.add(newop);
+			}
+			var arr_year=msg.arr_year;
+			for(var i=2016;i<=2025;i++){
+				var newop=new Option(arr_year[i],i);
+				if(i==msg.now_year){
+					newop.selected="selected";
+				}
+				$('.year')[0].options.add(newop);
+			}
+			var arr_week=msg.arr_week;
+			for(var i=0;i<arr_week.length;i++){
+				var newop=new Option(arr_week[i],arr_week[i]);
+				if(arr_week[i]==msg.now_week){
+					newop.selected="selected";
+				}
+				$('.week')[0].options.add(newop);
+			}
+		},'json');
+	}
+	
+	/*
+	 * 提交按钮
+	 * 拼接提交数据跳转	
+	 */
+	$('#create_weekplan').click(function(){
+		var year=$('.year').val();
+		var month=$('.month').val();
+		var week=$('.week').val();
+		var url="{$smarty.const.__CONTROLLER__}/talk/year/"+year+"/month/"+month+"/week/"+week;
+		location.href=url;
+		
+	});
+	 
+	$('.close').click(function(){
+		$('.error_div').fadeOut(200);
+	});
+	//重新选择隐藏警告框
+	$('select').click(function(){
+		$('.error_div').fadeOut(200);
+	});
+	
+</script>
+
+
+
+
+

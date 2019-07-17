@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+<script>
+</script>
+<link rel="stylesheet" href="{$smarty.const.SMARTY_CSS_URL}/calendar.css">
+<link rel="stylesheet" href="{$smarty.const.SMARTY_CSS_URL}/plan.css">
+<style type="text/css">
+/*
+ * 时间的下拉div
+ */
+#con .con_time1{
+	display:none;
+	background:white;
+	border-radius:0px;
+	cursor:pointer;
+	height:127px;
+	width:95%;
+	border:1px #ccc solid;
+	position:absolute;
+	left:2px;
+	top:30px;
+	z-index: 999;
+}
+#con .con_time1 ul li{
+	border-radius:0px;
+	cursor: pointer;
+	height:25px;
+	width:100%;
+}
+/*
+ * 完成状态下拉div
+ */
+#con .con_status1{
+	display:none;
+	background:white;
+	border-radius:0px;
+	cursor:pointer;
+	height:50px;
+	width:95%;
+	border:1px #ccc solid;
+	position:absolute;
+	left:3px;
+	top:30px;
+	z-index: 999;
+}
+#con .con_status1 ul li{
+	border-radius:0px;
+	cursor: pointer;
+	height:23px;
+	width:100%;
+}
+</style>
+<script type="text/javascript" src="{$smarty.const.SMARTY_JS_URL}/jquery.min.js"></script>
+<script src="{$smarty.const.SMARTY_JS_URL}/calendar.js"></script> 
+<title>质询会表格</title>
+</head>
+<body>
+<form action="{$smarty.const.__CONTROLLER__}/monthplan_modify" method="POST" enctype="multipart/form-data">
+	<table id="out" cellspacing="0" cellpadding="0" border="0">
+		<!--大表第一行基本信息-->
+		<tr>    
+			<td>
+				<table id="userinfo"  cellspacing="0" cellpadding="0" border="0">
+					<thead>
+						<tr>
+							<td colspan="13" class="head">基本信息</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr >
+							<td class="jiben_title">
+								<div class="jiben_title_div">主题:</div>
+							</td>
+							<td  colspan="11" >
+								<input type="text" class="head_zt readonly" value="{$data['theme']}" name="theme" readonly>
+							</td>
+										
+						</tr>
+						<tr>
+							<td class="jiben_title">
+								<div class="jiben_title_div">序号:</div>
+							</td>
+							<td class="jiben_content">
+								<input type="text" value="{$data['number']}" readonly="" name="number" class="jiben_readonly"/>
+							</td>				
+							<td class="jiben_title">填表人:</td>				
+							<td class="jiben_content">
+								<input type="text" value="{$data['name']}" readonly="" name="name" class="jiben_readonly"/>
+							</td>	
+							<td class="jiben_title">部门:</td>	
+							<td class="jiben_content">
+								<input type="text" value="{$data['dept']}" readonly="" name="dept" class="jiben_readonly"/>
+							</td>													
+							<td class="jiben_title">填表日期:</td>	
+							<td class="jiben_content">
+								<input type="text" value="{$data['writetime']}"  readonly=""  name="writetime" class="jiben_readonly"/>
+							</td>													
+							<td class="jiben_title">开始日期:</td>	
+							<td class="jiben_content">
+								  <input type="text" id="jiben_time" name="starttime" value="{$data['starttime']}"/>
+								  <div id="jiben_time1"></div>
+							</td>													
+							<td class="jiben_title" >结束日期:</td>	
+							<td class="jiben_content">
+								<input type="text" id="jiben_endtime" name="endtime" value="{$data['endtime']}" />
+								<div id="jiben_endtime1"></div>
+							</td>	
+							<td></td>							
+						</tr>
+						<tr> 
+						</tr>
+					</tbody>
+				</table>
+			</td>
+		</tr>
+		<!--大表第二行保存按钮-->
+		<tr height="40px">
+			<td width="300px">
+				<div class="out_btn">
+					<input type="submit" value="提交" class="jiben_submit"/>
+					<input type="text" class="jiben_filename" redaonly/>
+				</div>
+				<span style="display:none;line-height:26px;" id="jiben_warning">
+					<font color="red" style="font-size:17px;">必须填写字段！</font>
+				</span>
+			</td>
+		</tr>
+
+		<!--大表第四行：月计划表单-->
+		<tr id="week_plan">
+			<td>
+				<div class="con_out">
+					<fieldset>
+					<legend style="margin-left:10px;">月计划表单</legend>
+					<table id="content" cellspacing="0" cellpadding="0" border="0">
+						<thead>
+							<tr>
+								<td colspan="13" class="head">
+									<div style="height:20px;width:70px;float:left;	cursor:pointer;">
+										<span class="con_add_img1"></span><input type="button" class="con_add" value="新增">
+									</div>	
+									<div style="height:20px;width:70px;float:left;margin-left:5px;	cursor:pointer;">
+										<span class="con_add_img2"></span><input type="button" class="con_del" value="删除">
+									</div>
+									<div style="height:20px;width:70px;float:left;margin-left:5px;	cursor:pointer;">
+										<span class="con_add_img3"></span><input type="button" class="con_moveup" value="上移">
+									</div>
+
+								</td>
+							</tr>
+						</thead>
+						<tbody id="con">
+							<tr class="con_tr1">
+								<td class="con_title"  width="40px">
+									<input type="checkbox" id="con_select">
+								</td>
+								<td width="40px">序号</td>
+								<td width="85px">业务模块</td>
+								<td width="600px">二级模块</td>
+								<td width="250px">结果定义</td>
+								<td width="80px">时间</td>
+								<td width="80px">措施</td>
+								<td width="65px">自惩承诺</td>
+								<td width="65px">重点</td>
+								<td sytle="border-right:none;" width="200px">备注</td>
+							</tr>
+							<!--用来装内容的tr-->
+							<tr class="con_tr2 hide">
+								<td>
+									<input type="checkbox" class="ckbox"></td>
+								<td>
+									<!--序号栏-->
+									<input type="text" class="xuhao"readonly name="xuhao[]" >
+								</td>
+								<td style="position:relative;">	
+									<!--业务模块和下拉-->
+									<div class="con_model">
+										<input type="text" class="con_md" name="ywmodel[]"></input>
+									</div>
+									<div class="con_model1">
+										<ul>
+											<li>团队管理</li>
+											<li>客户价值</li>
+											<li>安全</li>
+											<li>机制</li>
+											<li>文化</li>
+											<li>个人成长</li>
+											<li>KPI指标</li>
+											<li>其他业务</li>
+										</ul>
+									</div>
+								</td>
+								<!--二级模块-->
+								<td>								
+									<input type="text" value="" class="con_ejmk" name="ejmodel[]">
+								</td>
+								<!--结果定义-->
+								<td>
+									<input type="text" value="" class="con_jgdy" name="result[]">
+								</td>
+								<!--时间-->
+								<td style="position:relative;">
+									<div class="con_time">
+										<input type="text" name="statustime[]"></input>
+									</div>
+									<div class="con_time1">
+										<ul>
+											<li>第一周</li>
+											<li>第二周</li>
+											<li>第三周</li>
+											<li>第四周</li>
+											<li>第五周</li>
+										</ul>
+									</div>
+								</td>		
+								<!--状态-->				
+								<td style="position:relative;">			
+									<div class="con_status">
+										<input type="text" name="status[]"></input>
+									</div>
+									<div class="con_status1">
+										<ul>
+											<li>持续</li>
+											<li>完成</li>
+										</ul>
+									</div>
+								</td>
+								<!--自惩承诺-->								
+								<td>
+									<input type="text" value="5元" class="con_zfcn" name="sf[]">			
+								</td>
+								<!--是否重点-->								
+								<td class="con_sfzd">
+									<input type="checkbox" value="是" name="zd[]">				
+									<input type="checkbox" value="否" name="zd[]" checked="checked" class="hide">				
+								</td>
+								
+								<!--备注-->							
+								<td>
+									<input type="text" value="" class="con_bz" name="remark[]">
+								</td>						
+							</tr>
+						</tbody>
+					</table>
+					</fieldset>
+				</div>	
+			</td>
+		</tr>
+		<!--*********************************************************-->
+		<!--父id-->
+		<input type="hidden" value="{$data['id']}" name="pid">		
+		<input type="hidden" value="{$smarty.get.redirect}" name="redirect">
+		<!--工号-->
+		<input type="hidden" value="{$data['samaccountname']}" name="samaccountname">
+	</table>
+</form>
+	
+	
+<script type="text/javascript" src="{$smarty.const.SMARTY_JS_URL}/zxh_plan.js"></script>
+<script src="{$smarty.const.SMARTY_JS_URL}/zxh_public.js"></script>
+	
+
+<script>
+	//初始化显示
+	 $().ready(function(){
+	{*下标1开循环次  *}
+	{section loop=$data name='key' start='1' max=$line}
+		var $newtr=$('#content tr:eq(2)').clone(true);
+		$newtr.removeClass('hide');
+		var xuhao="{$data['xuhao'][key]}";
+		var ywmodel="{$data['ywmodel'][key]}";
+		var ejmodel="{$data['ejmodel'][key]}";
+		var result="{$data['result'][key]}";
+		var statustime="{$data['statustime'][key]}";
+		var status="{$data['status'][key]}";
+		var sf="{$data['sf'][key]}";	//自罚承诺
+		var zd="{$data['zd'][key]}";
+		var remark="{$data['remark'][key]}";
+		//如果是重点则加红色class并且勾选重点
+		if(zd=="是"){
+			$newtr.find('td:eq(1) input').val(htmlspecialchars_decode(xuhao)).addClass('zd');
+			$newtr.find('td:eq(2) input').val(htmlspecialchars_decode(ywmodel)).addClass('zd');
+			$newtr.find('td:eq(3) input').val(htmlspecialchars_decode(ejmodel)).addClass('zd');
+			$newtr.find('td:eq(4) input').val(htmlspecialchars_decode(result)).addClass('zd');
+			$newtr.find('td:eq(5) input').val(htmlspecialchars_decode(statustime)).addClass('zd');
+			$newtr.find('td:eq(6) input').val(htmlspecialchars_decode(status)).addClass('zd');
+			$newtr.find('td:eq(7) input').val(htmlspecialchars_decode(sf)).addClass('zd');
+			$newtr.find('td:eq(8) input:eq(0)').attr("checked","checked").next().attr("checked",false);		
+			$newtr.find('td:eq(9) input').val(htmlspecialchars_decode(remark)).addClass('zd');
+			$('#content').append($newtr);
+		}else{
+			$newtr.find('td:eq(1) input').val(htmlspecialchars_decode(xuhao));
+			$newtr.find('td:eq(2) input').val(htmlspecialchars_decode(ywmodel));
+			$newtr.find('td:eq(3) input').val(htmlspecialchars_decode(ejmodel));
+			$newtr.find('td:eq(4) input').val(htmlspecialchars_decode(result));
+			$newtr.find('td:eq(5) input').val(htmlspecialchars_decode(statustime));
+			$newtr.find('td:eq(6) input').val(htmlspecialchars_decode(status));		
+			$newtr.find('td:eq(7) input').val(htmlspecialchars_decode(sf));
+			$newtr.find('td:eq(9) input').val(htmlspecialchars_decode(remark));
+			$('#content').append($newtr);
+		}
+	{/section}
+	 });
+/*
+ * 日期选择jquery
+ */
+    $('#jiben_time1').calendar({
+        trigger: '#jiben_time',
+        zIndex: 999,
+		format: 'yyyy-mm-dd',
+        onSelected: function (view, date, data) {
+            console.log('event: onSelected')
+        },
+        onClose: function (view, date, data) {
+            console.log('event: onClose')
+            console.log('view:' + view)
+            console.log('date:' + date)
+            console.log('data:' + (data || 'None'));
+        }
+    });
+    $('#jiben_endtime1').calendar({
+        trigger: '#jiben_endtime',
+        zIndex: 999,
+		format: 'yyyy-mm-dd',
+        onSelected: function (view, date, data) {
+            console.log('event: onSelected')
+        },
+        onClose: function (view, date, data) {
+            console.log('event: onClose')
+            console.log('view:' + view)
+            console.log('date:' + date)
+            console.log('data:' + (data || 'None'));
+        }
+    });
+</script>
+</body>
+</html>

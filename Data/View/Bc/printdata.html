@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+<!-- <link rel="icon" href="<?php echo DATA_IMG_URL;?>/vinda.ico">
+    <script type="text/javascript" src="<?php echo DATA_JS_URL;?>/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="<?php echo DATA_JS_URL;?>/jQuery.print.js"></script> -->
+    <title>打印报表</title>
+<style>
+
+.layui-table{
+  color: #000;
+  text-align: center;
+  margin: 0 auto;
+  width: 1000px;
+}
+.layui-table th{
+  background-color: #fff;
+  font-weight:bold;
+}
+.layui-table td{
+  border: 1px solid #000;
+  border-color: #000;
+}
+.title{
+  font-weight:bold;
+  height: 0.3in;
+  line-height: 0.33in;
+  width: 20%;
+}
+.content{
+  line-height: 0.33in;
+  width: 80%;
+}
+
+</style>
+</head>
+<body>
+  <table class="layui-table" cellspacing="0" cellpadding="0">
+      <colgroup>
+        <col width="130">
+        <col>
+      </colgroup>
+      <thead>
+        <tr>
+           <th colspan="2">维达纸业（四川）有限公司</th>
+        </tr> 
+        <tr>
+           <th style="text-align: right;">造纸车间 <?php echo $data['jt_num'];?> 号机入仓原纸标识</th>
+           <th>造纸-28-A</th>
+        </tr> 
+        <tr>
+           <th colspan="2" style="text-align: right;border-bottom: 1px solid #000">日期：<?php echo $data['date'];?></th>
+        </tr> 
+      </thead>
+      <tbody class="content">
+        <tr>
+           <td class="title">产品种类</td>
+           <td class="content"><?php echo $data['cp_class'];?></td>
+        </tr>
+        <tr>
+           <td class="title">定量(g/m3)</td>
+           <td class="content"><?php echo $data['dingliang'];?></td>
+        </tr>
+        <tr>
+           <td class="title">原纸张轴号</td>
+           <td class="content"><?php echo $data['zhou_num'];?></td>
+        </tr>
+        <tr>
+           <td class="title">断头数(个)</td>
+           <td class="content"><?php echo $data['is_dt'];?></td>
+        </tr>
+        <tr>
+           <td class="title">卷长(m)</td>
+           <td class="content"><?php echo $data['juanchang'];?></td>
+        </tr>
+        <tr>
+           <td class="title">净重kg</td>
+           <td class="content"><?php echo $data['jingzhong'];?></td>
+        </tr>
+        <tr>
+           <td class="title">毛重kg</td>
+           <td class="content"><?php echo $data['maozhong'];?></td>
+        </tr>
+        <tr>
+           <td class="title">直径</td>
+           <td class="content"><?php echo $data['zhijing'];?></td>
+        </tr>
+        <tr>
+           <td class="title">是否合格</td>
+           <td class="content"><?php echo $data['is_hg'];?></td>
+        </tr>        
+        <tr>
+           <td class="title">皱纹级别</td>
+           <td class="content"><?php echo $data['zz_level'];?></td>
+        </tr>
+        <tr>
+           <td class="title">下道工序</td>
+           <td class="content"><?php echo $data['next'];?></td>
+        </tr>
+        <tr>
+           <td class="title">备注</td>
+           <td class="content"><?php echo $data['bz'];?></td>
+        </tr>
+      </tbody>
+  </table>
+	
+</body>
+<script>
+</script>
+</html>

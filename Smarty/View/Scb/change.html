@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+	<title>车间转产记录</title>   
+	<link rel="stylesheet" href="{$smarty.const.SMARTY_CSS_URL}/bootstrap.min.css">
+    <link rel="stylesheet" href="{$smarty.const.SMARTY_CSS_URL}/scb-change-public.css">  
+    <link rel="stylesheet" href="{$smarty.const.TOOLS}/easyui/themes/default/easyui.css">  
+    <link rel="stylesheet" href="{$smarty.const.TOOLS}/easyui/themes/icon.css">     
+    <script type="text/javascript" src="{$smarty.const.SMARTY_JS_URL}/jquery.min.js"></script>
+<style>
+
+#navbar-collapse li{
+	margin:0 15px;
+}
+.search{
+	margin:10px 0 20px 0;
+}
+.nav_form{
+	display: inline-block;
+	width: auto;
+	vertical-align: middle;
+}
+
+.thumbnail{
+	min-width:248px;
+}
+.del_btn{
+	color:#ccc;
+	font-size: 17px;
+	cursor: pointer;
+}
+</style>
+</head>
+<body>
+<nav class="navbar navbar-default navbar-fixed-top">
+	<div class="container">
+		<div class="navbar-header">
+			<a href="change.html" class="navbar-brand">车间转换记录</a>
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+		</div>
+		<div class="collapse navbar-collapse" id="navbar-collapse">
+			<ul class="nav navbar-nav navbar-left" style="min-width:350px;">
+				<li class="active"><a href="{U('change')}">我的记录</a></li>　
+				<li><a href="{U('create')}">新建记录</a></li>
+				<li><a href="{U('loginout')}">退出</a></li> 
+			</ul>
+			<ul class="nav navbar-nav navbar-right" style="max-height:50px;">
+				<li><a>你好！{$name}</a></li>　
+			</ul>	
+		</div>
+	</div>
+</nav>
+
+
+<div class="content">
+	<div class="container">
+		<div class="search">
+				
+			<form class="form-inline">
+	           <select name="year" class="year form-control nav_form"></select>
+	           <select name="month"  class="month form-control nav_form"></select>
+	           <input value="查询" id="btn_select" type="button" class="btn btn-primary btn-sm"/>                          
+	        </form>
+        </div>
+       
+		<div class="row">
+		   {foreach $data as $v}
+		   <div class="col-lg-3 col-md-4 col-sm-4 col-xs-6">
+		      <div class="thumbnail">
+		        <div class="caption">		        
+			       	<table class="table table-bordered">
+					  	<tr>
+					  		<td>日期</td>
+					  		<td><b>{$v.date|date_format:"%Y.%m.%d"}</b></td>
+					  	</tr>
+					  	<tr>
+					  		<td>起始时间</td>
+					  		<td>{$v.time_left}</td>
+					  	</tr>
+					  	<tr>
+					  		<td>结束时间</td>
+					  		<td>{$v.time_right}</td>
+					  	</tr>
+					  	<tr>
+					  		<td>耗时(小时)</td>
+					  		<td>{$v.decimal}</td>
+					  	</tr>
+					  	<tr>
+					  		<td>机台</td>
+					  		<td>{$v.machine}</td>
+					  	</tr>
+					  	<tr>
+					  		<td>机长</td>
+					  		<td>{$v.name}</td>
+					  	</tr>
+					  	<tr>
+					  		<td>原产品</td>
+					  		<td>{$v.old}</td>
+					  	</tr>
+					  	<tr>
+					  		<td>更换产品</td>
+					  		<td>{$v.new}</td>
+					  	</tr>
+					  	<tr>
+					  		<td>标准转产时间</td>
+					  		<td>{$v.standard}</td>
+					  	</tr>
+					  	<tr>
+					  		<td>补产时间</td>
+					  		<td>{$v.supply}</td>
+					  	</tr>
+					  	<tr>
+					  		<td>8h标准产量</td>
+					  		<td>{$v.8h_biaozhun}</td>
+					  	</tr>
+					  	<tr>
+					  		<td>损失产量</td>
+					  		<td>{$v.sunshi}</td>
+					  	</tr>
+					</table>
+		        </div>
+		      </div>
+		   </div> 
+		   {/foreach}
+		</div>
+		
+		
+	</div>
+</div>
+
+
+
+
+
+
+</body>
+</html>
+<script type="text/javascript" src="{$smarty.const.TOOLS}/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="{$smarty.const.TOOLS}/easyui/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="{$smarty.const.SMARTY_JS_URL}/bootstrap.min.js"></script>
+<script type="text/javascript" src="{$smarty.const.SMARTY_JS_URL}/scb_public.js"></script>
+<script>
+$().ready(function(){
+		date();
+	});
+	
+function date(){
+	var url="{$smarty.const.__CONTROLLER__}/date";
+	$.post(url,function(msg){
+		var arr_month=msg.arr_month;
+		var arr_year=msg.arr_year;
+		var now_year="{$smarty.get.year}"?"{$smarty.get.year}":msg.now_year;
+		var now_month="{$smarty.get.month}"?"{$smarty.get.month}":msg.now_month;
+		now_month=Number(now_month)-1;
+		for(var i in arr_month){
+			var value=Number(i)+1;
+			var newop=new Option(arr_month[i],value);
+			if(i==now_month){
+				newop.selected="selected";
+			}
+			$('.month')[0].options.add(newop);
+		}
+		for(var y in arr_year){
+			var newop=new Option(arr_year[y],y);
+			if(y==now_year){
+				newop.selected="selected";
+			}
+			$('.year')[0].options.add(newop);
+		}
+	},'json');
+}
+
+$("#btn_select").click(function(){
+	var y=$(".year").val();
+	var m=$(".month").val();
+	location.href="{U('change','','')}"+"/year/"+y+"/month/"+m;
+});
+
+</script>
+
+
+

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+	<title>新建记录</title>   
+	<link rel="stylesheet" href="{$smarty.const.SMARTY_CSS_URL}/bootstrap.min.css">
+    <link rel="stylesheet" href="{$smarty.const.SMARTY_CSS_URL}/scb-change-public.css">  
+    <link rel="stylesheet" href="{$smarty.const.TOOLS}/easyui/themes/default/easyui.css">  
+    <link rel="stylesheet" href="{$smarty.const.TOOLS}/easyui/themes/icon.css">     
+    <script type="text/javascript" src="{$smarty.const.SMARTY_JS_URL}/jquery.min.js"></script>
+<style>
+#navbar-collapse li{
+	margin:0 15px;
+}
+
+.readonly{
+	background: #dbdbdb;
+}
+.top-h2 {
+	margin:20px 0;
+    font-size: 18px;
+    text-align: center;
+    letter-spacing: 1px;
+    color: #0059b2;
+}
+
+.row{
+	margin:10px auto;
+}
+.row label{
+	line-height:34px;
+	min-width:34px;
+}
+.content form{
+	max-width: 500px;
+	margin:0 auto;
+}
+.content .time{
+	display:inline;
+}
+</style>
+</head>
+<body>
+<nav class="navbar navbar-default navbar-fixed-top">
+	<div class="container">
+		<div class="navbar-header">
+			<a href="change.html" class="navbar-brand">车间转换记录</a>
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+		</div>
+		<div class="collapse navbar-collapse" id="navbar-collapse" >
+			<ul class="nav navbar-nav navbar-left" style="min-width:350px;">
+				<li><a href="{U('change')}">我的记录</a></li>　
+				<li class="active"><a href="{U('create')}">新建记录</a></li>
+				<li><a href="{U('loginout')}">退出</a></li> 
+			</ul>
+			<ul class="nav navbar-nav navbar-right" style="max-height:50px;">
+				<li><a>你好！{$name}</a></li>　
+			</ul>	
+		</div>
+	</div>
+</nav>
+
+<div class="content">                   
+	<h2 class="top-h2">「tip:提交后不能删除,请联系管理员删除。」</h2>
+	<div class="container">
+		<form class="form-horizontal" id="fm">
+		  <div class="form-group">
+		    <label for="date" class="col-sm-3 control-label">日期</label>
+		    <div class="col-sm-9">
+		       <input type="text" class="form-control" id="date" name="date" style="width:150px;">
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <label for="time" class="col-sm-3 control-label">时间段</label>
+		    <div class="col-sm-9">
+		       <input type="text" class="form-control time time_left" name="time_left" style="width:150px;">－
+		       <input type="text" class="form-control time time_right" name="time_right" style="width:150px;">
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <label for="hour" class="col-sm-3 control-label">耗时</label>
+		    <div class="col-sm-9">
+		      <input type="text" class="form-control" id="hour" readonly="" name="hour" style="width:150px;">
+		      <input type="hidden" id="decimal" name="decimal">
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <label for="machine" class="col-sm-3 control-label">机台</label>
+		    <div class="col-sm-9">
+		      <input type="text" class="form-control" id="machine" name="machine" style="width:150px;">
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <label for="name" class="col-sm-3 control-label">机长</label>
+		    <div class="col-sm-9">
+		      <input type="text" class="form-control readonly" id="name" name="name" style="width:150px;" value="{$name}" readonly>
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <label for="old" class="col-sm-3 control-label">原产品</label>
+		    <div class="col-sm-9">
+		      <input type="text" class="form-control" id="old" name="old">
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <label for="new" class="col-sm-3 control-label">更换产品</label>
+		    <div class="col-sm-9">
+		      <input type="text" class="form-control" id="new" name="new">
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <label for="standard" class="col-sm-3 control-label">标准转产时间</label>
+		    <div class="col-sm-9">
+		      <input type="text" class="form-control" id="standard" name="standard" style="width:150px;">
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <label for="supply" class="col-sm-3 control-label">补产时间</label>
+		    <div class="col-sm-9">
+		      <input type="text" class="form-control readonly" id="supply" name="supply" style="width:150px;" readonly>
+		    </div>
+		  </div>  
+		  <div class="form-group">
+		    <label for="8h_biaozhun" class="col-sm-3 control-label">8h标准产量</label>
+		    <div class="col-sm-9">
+		      <input type="text" class="form-control" id="8h_biaozhun" name="8h_biaozhun">
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <label for="sunshi" class="col-sm-3 control-label">产量损失</label>
+		    <div class="col-sm-9">
+		      <input type="text" class="form-control" id="sunshi" name="sunshi">
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <div class="col-sm-offset-3 col-sm-9">
+		         <button type="button" class="btn btn-default btn-info sub">提交</button>
+		    </div>
+		  </div>
+		  <input type="hidden" name="group_name" value="{$group_name}">
+		</form>
+	</div>
+</div>
+
+
+
+
+
+
+</body>
+</html>
+<script type="text/javascript" src="{$smarty.const.TOOLS}/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="{$smarty.const.TOOLS}/easyui/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="{$smarty.const.SMARTY_JS_URL}/bootstrap.min.js"></script>
+<script type="text/javascript" src="{$smarty.const.SMARTY_JS_URL}/scb_public.js"></script>
+<script>
+$().ready(function(){
+	$('#date').datebox({
+		currentText:'今天',
+		editable:false,
+	});
+	$('.time').datetimebox({
+		editable:false,
+		showSeconds:false,
+		onChange:function(){
+			var left=$(".time_left").datetimebox('getValue').replace(/-/g,"/");
+			var right=$(".time_right").datetimebox('getValue').replace(/-/g,"/");
+			var dif=new Date(right)-new Date(left);
+			var decimal=(dif/1000/3600).toFixed(2);
+			var difH=Math.floor(dif/1000/3600);  
+			var difM=dif/1000%3600/60;	
+			var str=difH+"小时"+difM+"分钟";
+			if(decimal>=1){
+				$("#hour").val(str);
+				$("#decimal").val(decimal);		
+				//时间段变更并且有标准产量
+				if($("#standard").val()!="")
+				{
+					supply();			
+				};	
+			}else{
+				$("#hour").val("时间段不足一小时");
+				$("#supply").val("");
+			}		
+		}
+	});
+	
+	$("#machine").combobox({
+		 valueField: 'machine',
+	     textField: 'machine',
+	     url: "{U('machineList')}",
+	     editable:false,
+	});
+});
+
+//标准产量正则	
+//改成了：标准转产时间
+$("#standard").keyup(function(){  
+        $(this).val($(this).val().replace(/[^0-9]/g,''));  
+        supply();
+    }).bind("paste",function(){  //CTR+V
+        $(this).val($(this).val().replace(/[^0-9]/g,''));   
+        supply();
+});
+function supply(){
+	var standard=$("#standard").val();
+	var hour=$("#decimal").val();
+	//老版本
+	//var supply=(standard/8*hour).toFixed(1);
+	//新版本：标准转产时间和耗时取小的一个
+	var left=$(".time_left").datetimebox('getValue').replace(/-/g,"/");
+	var right=$(".time_right").datetimebox('getValue').replace(/-/g,"/");
+	var dif=new Date(right)-new Date(left);
+	//实际耗时转成小时 整数
+	dif=Math.round(dif/1000/3600);
+	var standard=$("#standard").val();
+	var supply=dif<standard?dif:standard;
+	$("#supply").val(supply);
+}
+//提交
+$(".sub").click(function(){
+	if(check()){
+		$.post("{U('create')}",$("#fm").serialize(),function(res){
+			if(res=="1")
+			{
+				location.href="{U('change')}";
+			}else{
+				$.messager.alert('警告框','提交失败!','info');
+			}
+		});
+	}
+	
+});
+
+//所有验证
+function check(){
+	if(!easyUiEmpty("date"))
+	{
+		$.messager.alert('警告框','日期必须填写','info');
+		return false;
+	}
+	else if($("#hour").val()=="" || $("#hour").val()=="时间段不足一小时" || !easyUiEmpty("time_left") || !easyUiEmpty("time_right"))
+	{
+		$.messager.alert('警告框','时间段错误','info');
+		return false;
+	}
+	else if(!easyUiEmpty("machine"))
+	{
+		$.messager.alert('警告框','机台必须填写','info');
+		return false;
+	}
+	else if(!checkEmpty("#name")){
+		return false;
+	}
+	else if(!checkEmpty("#old")){
+		return false;
+	}
+	else if(!checkEmpty("#new")){
+		return false;
+	}
+	else if(!checkEmpty("#standard")){
+		return false;
+	}else if(!checkEmpty("#8h_biaozhun")){
+		return false;
+	}else if(!checkEmpty("#sunshi")){
+		return false;
+	}else{
+		return true;
+	}
+
+};
+
+
+$("input").change(function(){
+	$(this).parent().removeClass("has-error");
+});
+
+</script>
+
+
+

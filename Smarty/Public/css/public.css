@@ -1,0 +1,7 @@
+@media (min-width: 0px) {
+	.nav_form{
+		display: inline-block;
+		width: auto;
+		vertical-align: middle;
+	}
+}

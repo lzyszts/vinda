@@ -1,0 +1,65 @@
+<include file="Public/head" /> 
+<style>
+  a{
+    display: inline-block;
+    color: #06c;
+    font-size: 20px;
+    margin-top: 5px;
+  }
+</style>
+</head>
+<body>
+    
+<article class="page-container">
+     <div class="layui-upload">
+        <button type="button" class="layui-btn layui-btn-normal mt-5" id="import">选择Excel</button>
+        <button type="button" class="layui-btn mt-5" id="upload">开始上传</button>
+     </div>
+     <a href="<?php echo SELF_URL;?>/Download/user/example.xlsx">导入格式示例下载</a>
+      <div class="res">
+          <div class="success mt-5"></div>
+          <div class="false mt-5 mb-5"></div>
+          <div class="info"></div>
+      </div>
+</article>
+
+
+
+<include file="Public/foot" /> 
+<script type="text/javascript">
+layui.use('upload', function(){
+  var upload = layui.upload;
+     //选完文件后不自动上传
+      upload.render({
+        elem: '#import',
+        url: '<?php echo U('user_import');?>',
+        auto: false,
+        accept:'file',
+        //multiple: true,
+        size:'10000',
+        bindAction: '#upload',
+        exts:'xls|xlsx',
+        before: function(obj){ 
+          layer.load(); //上传loading
+        },
+        done: function(res){
+          layer.closeAll('loading');
+            $('.success').html('成功：<font color="#dc5236">'+res.count_add+'</font> 条');
+            $('.false').html('失败：<font color="#dc5236">'+res.count_false+'</font> 条');
+            $('.info').append('失败信息：'+'<br>');
+            for(var i in res.false_info)
+            {
+              $('.info').append(res.false_info[i]+'<br>');
+            }
+        },
+        error: function(index, upload){
+          layer.closeAll('loading');
+        }
+      });
+  });
+ 
+  
+
+</script>
+</body>
+</html>

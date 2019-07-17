@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+	<title>用户管理</title>   
+	<link rel="stylesheet" href="{$smarty.const.SMARTY_CSS_URL}/bootstrap.min.css">
+	<link rel="stylesheet" href="{$smarty.const.TOOLS}/easyui/themes/default/easyui.css">  
+    <link rel="stylesheet" href="{$smarty.const.TOOLS}/easyui/themes/icon.css"> 
+    <link rel="stylesheet" href="{$smarty.const.SMARTY_CSS_URL}/scb-change-public.css">  
+    <script type="text/javascript" src="{$smarty.const.SMARTY_JS_URL}/jquery.min.js"></script>
+<style>
+.panel-header, .panel-body {  
+	border-width: 0px;  
+	font-size:14px;
+}  
+.panel-title {
+    font-size: 16px;
+    font-weight:normal;
+}
+.tools{
+	margin:10px auto;
+	text-align: center;
+}
+#user_table{
+	min-width:720px;
+}
+#user_table td{
+	white-space: nowrap;
+}
+#user_table .record{
+	cursor:pointer;
+	color:#1C94C4;
+}
+
+</style>
+</head>
+<body>
+	
+<nav class="navbar navbar-default navbar-fixed-top">
+	<div class="container">
+		<div class="navbar-header">
+			<a href="back.html" class="navbar-brand">转换记录后台</a>
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+		</div>
+		<div class="collapse navbar-collapse" id="navbar-collapse">
+			<ul class="nav navbar-nav navbar-left" style="min-width:350px;">
+				<li class="active"><a href="{U('back')}">用户管理</a></li>　
+				<li><a href="{U(machine)}">机台管理</a></li>
+				<li><a href="{U('data')}">数据中心</a></li>
+				<li><a href="{U('loginout')}">退出</a></li> 
+			</ul>
+			<ul class="nav navbar-nav navbar-right" style="max-height:50px;">
+				<li><a>你好！{$name}</a></li>　
+			</ul>	
+		</div>
+	</div>
+</nav>
+
+
+
+<div class="content">
+	<div class="container">
+		 <div class="tools">
+		 	 <button type="button" class="btn btn-primary" id="btn_group">添加车间</button>
+		 	 <button type="button" class="btn btn-primary" id="btn_user">添加人员</button>
+		 </div>
+		 {foreach $group_list as $v}
+		 <div class="panel panel-info">
+			 <div class="panel-heading form-inline">
+			  	<h3 class="panel-title group_title" style="display:inline;">{$v.group_name}</h3>
+			  	<input type='text' class='form-control group_title_change' style="display:none;">
+			  	<span class="glyphicon glyphicon-remove group_remove" style="color:#ccc;cursor:pointer;display:inline;float:right;" group-id="{$v.id}"></span>
+			 </div>
+			 <div class="panel-body">
+			     <table class="table table-bordered table-hover table-striped" id="user_table"> 
+				    <tbody>
+					    <tr>
+							<th style="width:200px;">姓名</th>
+					        <th style="width:200px;">工号</th>
+					        <th>职位</th> 
+					        <th style="width:50px;"></th> 
+						</tr>
+						{foreach $v.userinfo as $user}
+						<tr>
+							<td class="record">{$user.name}</td>
+					        <td>{$user.samaccountname}</td>
+					        <td>{$user.zhiwei}</td>
+					        <td><span class="glyphicon glyphicon-trash user_remove" style="color:#ccc;cursor:pointer;"></span></td>
+						</tr>
+						{/foreach}
+				    </tbody>
+			   	  </table>
+			 </div>
+		</div>
+		{/foreach}
+	</div>
+</div>
+
+
+
+
+
+</body>
+</html>
+<script type="text/javascript" src="{$smarty.const.TOOLS}/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="{$smarty.const.TOOLS}/easyui/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="{$smarty.const.SMARTY_JS_URL}/bootstrap.min.js"></script>
+<script type="text/javascript" src="{$smarty.const.SMARTY_JS_URL}/scb_public.js"></script>
+<script>
+$().ready(function(){
+	});
+/*
+ * 分组插入	
+ */
+$("#btn_group").click(function(){
+	$("body").append(creatModal("add_group","添加分组","400px"));
+	//输入框
+	var text="<div class='form-group'><label class='control-label'>车间名：</label><input class='form-control'type='text'></div>";
+	$(".add_group .modal-body").append(text);
+	//确定
+	var btn=creatInput("button","btn btn-primary btn_group_ok","","确认");
+	$(".add_group .modal-footer").append(btn);
+	$(".add_group").modal("show");
+	keep_body();
+});
+$(document).on("click", ".btn_group_ok", function() {
+	var text={
+		group_name:$(".add_group :text").val(),
+	}
+	$.post("{U('addGroup')}",text,function(res){
+		if(res=="0")
+		{
+			$.messager.alert('错误','车间已存在或其他错误','info');
+		}else{
+			location.reload();
+		}
+	});
+});
+/*
+ * 人员插入
+ */
+$("#btn_user").click(function(){
+	$("body").append(creatModal("user_group","人员分组","300px"));
+	//车间
+	var select="<label>请选择车间：</label>{createBootstrapSelect('scb_change_group','group','id','group_name')}";
+	$(".user_group .modal-body").append(select);
+	//姓名
+	var text="<div class='form-group'><label class='control-label'>工号：</label>";
+	text+="<div class='form-inline'><input class='form-control' id='samaccountname' name='samaccountname' type='text' placeholder='请输入工号'>";
+	text+=creatInput("button","btn btn-primary","userSearch","确定");
+	text+="<input class='form-control' style='margin-top:10px;' readonly id='name' name='name' type='text'></div>";
+	text+=creatInput("hidden","","zhiwei");
+	$(".user_group .modal-body").append(text);
+	//下
+	var btn=creatInput("button","btn btn-primary btn_user_ok","","提交");
+	$(".user_group .modal-footer").append(btn);
+	$(".user_group").modal("show");
+	keep_body();
+});
+
+
+//工号查找确定
+$(document).on("click", "#userSearch", function() {
+	var gh=$("#samaccountname").val();
+	if(gh!=="")
+	{
+		$.post("{U("searchUser")}",{ 'gh':gh },function(data){
+			if(data=="0")
+			{
+				$("#name").val("工号错误");
+			}
+		    if(typeof data=="object" ){
+		    	$("#name").val(data.name);
+				$("#zhiwei").val(data.title);
+			}
+			if(typeof data=="string"){
+				var str="用户已属于<font color='red'>"+data+"</font>";
+		    	$.messager.alert('错误',str,'info');
+		    	$("#name").val("");
+			}
+		},"json");
+	}
+
+});
+
+//分组提交
+$(document).on("click", ".btn_user_ok", function() {
+	var group=$("select[name='group']").val();
+	var samaccountname=$("#samaccountname").val();
+	var name=$("#name").val();
+	var zhiwei=$("#zhiwei").val();
+	if(group=="")
+	{
+		$.messager.alert('错误','车间必须选择!','info');
+		return false;
+	}
+	else if(samaccountname=="")
+	{
+		$.messager.alert('错误','请输入工号!','info');
+		return false;
+	}
+	else if(name=="" || name=="工号错误"){
+		$.messager.alert('错误','工号信息有误!','info');
+		return false;
+	}else{
+		var data={
+			'group_id':group,
+			'samaccountname':samaccountname,
+			'name':name,
+			'zhiwei':zhiwei
+		}
+		$.post("{U(addUser)}",data,function(res){
+			if(res=="1")
+			{
+				location.reload();
+			}else{
+				$.messager.alert('错误','插入失败!','info');
+			}
+		});
+	}
+});
+
+
+//用户删除
+$(".user_remove").click(function(){
+	var tr=$(this).parent().parent();
+	var gh=tr.find("td").eq("1").text();
+		$.post("{U(delUser)}",{ 'gh':gh },function(res){
+			if(res=="1")
+			{
+				tr.remove();
+			}
+		});
+});
+//分组删除
+$(".group_remove").click(function(){
+	var group_id=$(this).attr("group-id");
+	$.messager.confirm('确认对话框','你真的要删除吗？', function (flag) 
+	{ 
+		if (flag) {
+			$.post("{U(delGroup)}",{ 'id':group_id },function(res){
+				if(res=="1")
+				{
+					location.reload();
+				}else{
+					$.messager.alert('错误','删除失败!','info');
+				}
+			});
+		}
+	});
+});
+
+//分组改名
+$(".group_title").click(function(){
+	//隐
+	var value=$(this).text();
+	var edit=$(this).next();
+	$(this).hide();
+	edit.val(value).css("display","inline");
+});
+$(".group_title_change").blur(function(){
+	var value=$(this).val();
+	var group_id=$(this).next().attr("group-id");
+	var inp=$(this);
+	var h3=$(this).prev();
+	$.post("{U('changeGroup')}",{ 'group_id':group_id,'group_name':value },function(res){
+		if(res=="1")
+		{
+			inp.hide();
+			h3.text(value);
+			h3.show();
+		}else{
+			inp.hide();
+			h3.show();
+		}
+	})
+});
+//跳转
+$(".record").click(function(){
+	var s=$(this).next().text();
+	url="{U('record','','')}/samaccountname/"+s;
+	var el = document.createElement("a");
+	document.body.appendChild(el);
+	el.href = url; 
+	el.target = '_blank';
+	el.click();
+	document.body.removeChild(el)
+});
+
+
+	
+</script>
+
+
+

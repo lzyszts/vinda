@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+	<title>质询会</title>
+	<link href="{$smarty.const.SMARTY_CSS_URL}/mine.css" type="text/css" rel="stylesheet" />
+	<link rel="stylesheet" href="{$smarty.const.SMARTY_CSS_URL}/bootstrap.min.css">  
+	<script src="{$smarty.const.SMARTY_JS_URL}/jquery.min.js"></script>
+	<script type="text/javascript" src="{$smarty.const.SMARTY_JS_URL}/bootstrap.min.js"></script>
+	<style>
+	.table td{
+		text-align:center;
+		font-size: 15px;
+	}
+	.nav-div{
+		width:375px;
+		margin:3px auto;		
+	}
+	#down-frame{
+		border: none; 
+		padding: 0px; 
+	}
+	</style>     
+</head>
+<body>
+	<div class="nav-div">
+		<div class="container-fluid">
+			<ul id="nav" class="nav nav-pills">
+			  <li class="dropdown active">
+				<a href="#" data-toggle="dropdown">操作周报表<span class="caret"></span></a>
+				<ul class="dropdown-menu">
+					<li><a href="{$smarty.const.__MODULE__}/Rzb/weekplanlist" target="down-frame">查看</a></li>
+					<li><a href="{$smarty.const.__MODULE__}/Rzb/weekplan_time" target="down-frame">填写</a></li>
+				</ul>
+			  </li>
+			  <li class="dropdown">
+				<a href="#" data-toggle="dropdown">操作月报表<span class="caret"></span></a>
+				<ul class="dropdown-menu">
+					<li><a href="{$smarty.const.__MODULE__}/Rzb/monthplanlist" target="down-frame">查看</a></li>
+					<li><a href="{$smarty.const.__MODULE__}/Rzb/monthplan_time" target="down-frame">填写</a></li>
+				</ul>
+			  </li>
+			  <li class="dropdown">
+				<a href="#" data-toggle="dropdown">交流议题<span class="caret"></span></a>
+				<ul class="dropdown-menu">
+					<li><a href="{$smarty.const.__MODULE__}/Rzb/talklist" target="down-frame">查看</a></li>
+					<li><a href="{$smarty.const.__MODULE__}/Rzb/talk_time" target="down-frame">填写</a></li>
+				</ul>
+			  </li>
+			</ul>
+		</div>	
+	</div>
+	<iframe src="{$smarty.const.__CONTROLLER__}/weekplanlist" id="down-frame" name="down-frame" width="100%" height="100%"></iframe>
+</body>
+</html>
+<script>
+	$().ready(function(){
+		keep();	
+	});
+	//动态改变iframe高度
+	$(window).resize(keep);
+	function keep(){
+		var iframe_height=$(window).height()-55;
+		$('#down-frame').height(iframe_height);
+	}
+	$('li').click(function(){
+		$(this).addClass('active');
+		$('li').not($(this)).removeClass('active');
+	});
+/*
+ * 刷新iframe
+ */
+$(document).keydown(function(e) {
+	e = window.event || e;
+	if (e.keyCode == 116) 
+	{	
+		e.preventDefault();
+		var url=document.getElementsByTagName('iframe')[0].contentWindow.location.href;	
+		$('#down-frame').attr('src',url);
+	}
+});
+
+</script>
+
+
+

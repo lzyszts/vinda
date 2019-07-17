@@ -1,0 +1,248 @@
+<include file="Public/head" /> 
+<link rel="stylesheet" type="text/css" href="<?php echo ADMIN_CSS_URL;?>/hiui/zTree/zTreeStyle/zTreeStyle.css" />
+<style>
+ul.ztree {
+    margin-top: 10px;
+    border: 1px solid #617775;
+    background: #fff;
+    width: 220px;
+    overflow-y: scroll;
+    overflow-x: auto;
+}
+.layui-form-checkbox[lay-skin=primary] i{
+	width:18px;
+	height:18px;
+	line-height: 18px;
+	font-size: 18px;
+}
+</style>
+</head>
+<body>
+ <article class="page-container">
+	<form class="form form-horizontal layui-form" id="form-admin-auth-add">
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3">
+			    权限类别：
+			</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<select name="is_home" lay-verify="required" lay-filter="is_home">
+				   <option value="0">后台权限</option>
+				</select>    
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3">
+			    权限上级：
+			</label>
+			<div class="formControls col-xs-8 col-sm-9">
+                <!--树形-->
+                <input type="text" class="input-text" placeholder="不选择则为顶级权限" id="tree">
+                <input type="text" class="hidden" name="auth_pid" id="auth_pid">
+			</div>
+		</div>		
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3">
+			    <!--<span class="c-red">*</span>-->权限名：
+			</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="text" class="input-text" value="" placeholder="" id="auth_name" name="auth_name">
+			</div>
+		</div>
+
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3">模型：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="text" class="input-text" value="" placeholder="" id="module" name="module">
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3">控制器：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="text" class="input-text" value="" placeholder="" id="controller" name="controller">
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3">方法：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="text" class="input-text" value="" placeholder="" id="action" name="action">
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3">是否新页面：</label>
+			<div class="formControls col-xs-8 col-sm-9" style="margin-top:3px;">
+				<input type="checkbox" name="open" lay-skin="primary"> 
+			</div>
+		</div>
+		<div class="row cl">
+			<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+				<button type="button" class="btn btn-success radius" id="admin-auth-save" name="admin-auth-save">
+				<i class="icon-ok"></i> 确定</button>
+			</div>
+		</div>
+	</form>
+</article>
+
+<div id="menuContent" class="menuContent" style="display:none; position: absolute;">
+    <ul id="back" class="ztree" style="margin-top:0;"></ul>
+    <ul id="home" class="ztree" style="margin-top:0;display:none;"></ul>
+</div>
+
+
+<include file="Public/foot"/>  
+<script type="text/javascript" src="<?php echo ADMIN_JS_URL;?>/hiui/zTree/v3/js/jquery.ztree.all-3.5.min.js"></script> 
+<script type="text/javascript">
+$(function(){
+	layui.use('form', function(){
+		  var form = layui.form;
+		  //前后台切换
+		  form.on('select(is_home)', function(data){
+			  if(data.value==1)
+			  {
+			  	$("#back").hide();
+			  	$("#home").show();
+			  }else{
+			  	$("#back").show();
+			  	$("#home").hide();
+			  }
+			  $("#tree").val("").next().val("");
+		  });   
+	});
+	
+	$("#form-admin-auth-add").validate({
+        rules:{
+            auth_name:{
+                required:true,
+            },
+            module:{
+                required:true,
+            },
+            auth_pid:{
+                required:true,
+            },
+            controller:{
+                required:true,
+            },
+            action:{
+                required:true,
+            },
+        },
+    });
+	
+	$("#admin-auth-save").click(function(){
+	    //顶级权限不验证
+	    if($("#auth_pid").val()=="")
+	    {
+	        var check=true;
+	    }else{
+	        var check=$("#form-admin-auth-add").valid();  
+	    }
+        if(check)
+        {       
+            $.post("<?php echo U('add');?>",$("#form-admin-auth-add").serialize(),function(res){
+                if(res=="1")
+                {
+                    layer.msg('添加成功', {
+                      icon: 1,
+                      time: 1000
+                    }, function(){
+                       window.parent.window.location.reload();  
+                       //var index = parent.layer.getFrameIndex(window.name);
+                       //parent.layer.close(index);
+                    });     
+                }else{
+                    layer.alert(res, {icon: 5});
+                }
+            });     
+        }
+	});
+
+	/*
+	 * 初始化树
+	 */
+    $.fn.zTree.init($("#home"), setting, homeContent);
+    $.fn.zTree.init($("#back"), setting, backContent);
+});
+
+
+//树设置
+var setting = {
+    view: {
+        showLine: true,
+        selectedMulti: false,
+        open:true,
+    },
+    data: {
+        simpleData: {
+            enable:true,
+            idKey: "auth_id",
+            pIdKey: "auth_pid",
+            rootPId: ""
+        }
+    },
+    callback: {
+        //选择后回调
+        onClick:function(e, treeId, treeNode){
+            $("#tree").val(treeNode.name).next().val(treeNode.auth_id);
+            hideMenu();
+        }
+    }
+};
+//节点内容
+var backContent =[
+    <?php 
+    foreach($authinfo['back'] as $v)
+    {
+        $str= "{auth_id:".$v['auth_id'].",auth_pid:".$v['auth_pid'].",name:'".$v['auth_name']."',";
+        if($v['auth_pid']==0)
+        {
+            $str.="open:true},";
+        }else{
+            $str.="},";
+        }
+        echo $str;
+    }
+    ?>
+];
+var homeContent =[
+    <?php 
+    	foreach($authinfo['home'] as $v)
+    {
+        $str= "{auth_id:".$v['auth_id'].",auth_pid:".$v['auth_pid'].",name:'".$v['auth_name']."',";
+        if($v['auth_pid']==0)
+        {
+            $str.="open:true},";
+        }else{
+            $str.="},";
+        }
+        echo $str;
+    }
+    ?>
+];
+
+
+/*点击后显示*/
+$("#tree").click(function(){
+    var tree=$("#tree");
+    var listOffset = $("#tree").offset();
+    $("#menuContent").css({left:listOffset.left + "px", top:listOffset.top +tree.outerHeight() + "px"}).slideDown("fast");
+    $("body").bind("mousedown", onBodyDown);
+
+});
+/*点击其他地方隐藏*/
+function onBodyDown(event) {
+    if (!(event.target.id == "menuBtn" || event.target.id == "menuContent" || $(event.target).parents("#menuContent").length>0)) {
+        hideMenu();
+    }
+}
+function hideMenu() {
+    $("#menuContent").fadeOut("fast");
+    $("body").unbind("mousedown", onBodyDown);
+}
+
+ 
+
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+    <title>质询会数据汇总</title>
+    <link href="{$smarty.const.SMARTY_CSS_URL}/mine.css" type="text/css" rel="stylesheet" />
+    <link rel="stylesheet" href="{$smarty.const.SMARTY_CSS_URL}/bootstrap.min.css">
+    <link rel="stylesheet" href="{$smarty.const.SMARTY_CSS_URL}/public.css">
+</head>
+<style>
+    *{
+    	margin:0;
+    	font-family: Tahoma,Verdana,微软雅黑,新宋体;
+    }
+    table td{ 
+    	border: 1px solid #cad9ea;
+    	line-height: 35px;
+    	text-align: center;
+   	}
+   	.top-h2 {
+	    font-size: 18px;
+	    text-align: center;
+	    letter-spacing: 1px;
+	    color: #0059b2;
+	}
+	.top-p{
+		font-size: 18px;
+		text-align: center;
+		letter-spacing: 1px;
+		color: #999;
+	}
+	/******汇总表格区域*********/
+	#tablehz tr{
+		height:35px;
+	}
+	 .tr_hz{
+   	background-color: pink;
+   }
+	
+	/******表格区域*********/
+   .tr0{
+    	height:50px;
+    	font-size: 22px;
+    }
+   .tr1{
+   		color:#5E7595;
+   		background-color: #F2F7FE;
+   }
+   .tr3{
+  	 	color:#5E7595;
+   		background-color: #ccc;
+   }
+  
+	.text{
+		text-align:center;
+       	border:none;
+       	width:100%;
+       	height:100%;
+	}
+   .td_save{
+   	height:45px;
+   }
+   .td_save div{
+   	  width:20%;
+   	  margin: 0 auto;
+   }
+   .info{
+     display: block;
+     margin:0 auto;
+   }
+   .info_body{
+	   	width:370px;
+	   	height:200px;
+	   	margin:0 auto;
+   }
+}
+</style>
+<body>
+   <div class="container-fluid head_div">
+        <form class="form-inline">
+        	<select name="year" class="year form-control nav_form">
+                <option selected="selected" value="0">请选择</option>
+            </select>
+            <select name="month"  class="month form-control nav_form">
+                <option selected="selected" value="0">请选择</option>
+            </select>
+            <input value="查询" id="btn_select" type="button" class="btn btn-primary btn-sm"/> 
+            <input value="周汇总" id="btn_count" type="button" class="btn btn-primary btn-sm"/>                                        
+            <input value="月汇总" id="btn_month_count" type="button" class="btn btn-primary btn-sm"/>                                        
+            <input value="清除" id="btn_del" type="button" class="btn btn-primary btn-sm"/>                                        
+        </form>
+    </div>
+    <h2 class="top-h2">「注意:当用户填写汇总表后才会显示到此页面。」</h2> 
+    <!--周汇总表格-->
+    <div style="font-size: 15px; margin: 10px auto; width:850px;" class="hide" id="W">	 
+		<table id="tablehz" border="0" width="100%" > 
+				<tr class="tr0">
+					<td colspan="8">{$data['month']}月周数据汇总</td>
+					
+				</tr>
+				<tr class="tr_hz">
+					<td class="tr1" width="140">部门</td>
+					<td class="tr1" width="60">负责人</td>
+					<td width="80">计划共计</td>
+					<td width="130">持续项目计划共计</td>
+					<td width="80">完成共计</td>
+					<td width="80">未完成共计</td>
+					<td width="80">达成率</td>
+					<td style="background:#cfe7b3" width="100">备注</td>	
+				</tr>
+				<tr id="rzb">
+					<td>人力资源及行政部</td><td>黄勇</td><td></td><td></td><td></td><td></td><td></td><td></td>					
+				</tr>
+				<tr id="cgb">
+					<td>采购部</td><td>黄益建</td><td></td><td></td><td></td><td></td><td></td><td></td>				
+				</tr>
+				<!--
+				<tr id="cck">
+					<td>仓储科</td><td>张强</td><td></td><td></td><td></td><td></td><td></td><td></td>				
+				</tr>
+				-->
+				<tr id="pgb">
+					<td>品管部</td><td>周杨君</td><td></td><td></td><td></td><td></td><td></td><td></td>													
+				</tr>
+				<tr id="gcb">
+					<td>工程技术部</td><td>王勇</td><td></td><td></td><td></td><td></td><td></td><td></td>																	
+				</tr>
+				<tr id="cck">
+					<td>仓储科</td><td>付锦昌</td><td></td><td></td><td></td><td></td><td></td><td></td>																	
+				</tr>
+				<tr id="scb">
+					<td>生产部</td><td>唐明</td><td></td><td></td><td></td><td></td><td></td><td></td>																					
+				</tr>
+				<tr id="zzb">
+					<td>制造部</td><td>赖波</td><td></td><td></td><td></td><td></td><td></td><td></td>																					
+				</tr>
+		</table>
+	</div>	
+	
+	
+	
+    <!--月汇总表格-->
+    <div style="font-size: 15px; margin: 10px auto; width:850px;" class="hide" id="M">	 
+		<table id="monthhz" border="0" width="100%" > 
+				<tr class="tr0">
+					<td colspan="8">{$data['month']}月数据汇总</td>
+				</tr>
+				<tr class="tr_hz">
+					<td class="tr1" width="140">部门</td>
+					<td class="tr1" width="60">负责人</td>
+					<td width="80">计划共计</td>
+					<td width="80">完成共计</td>
+					<td width="80">未完成共计</td>
+					<td width="80">达成率</td>
+					<td style="background:#cfe7b3" width="100">备注</td>	
+				</tr>
+				{foreach $month_data as $k=>$v}
+				<tr>
+					<td>{$v["dept"]}</td>
+					<td>{$v["name"]}</td>
+					<td>{$v["jhgj"]}</td>
+					<td>{$v["wcgj"]}</td>
+					<td>{$v["wwcgj"]}</td>
+					<td>{$v["dcl"]}</td>
+					<td></td>
+				</tr>
+				{/foreach}
+		</table>
+	</div>	
+   
+   
+   
+   
+<!--每周汇总表格-->
+<form action="{$smarty.const.__CONTROLLER__}/addhz" method="POST">
+<div style="font-size: 15px; margin: 10px auto; width:1090px;">	 
+	{*循环每周的汇总表*}   
+	{foreach $data as $key=>$value}
+	{*只显示不为空并且不是年和月的汇总表*}
+	{if $value!=null && $key!="year" && $key!="month"}
+
+     <table class="table{$value['data']['i']}" border="0" width="100%" > 
+        <tbody>
+        	<!--1行-->
+        	<tr class="tr0">              		
+        		<td colspan="12">{$key}</td>          		        		
+        	</tr>
+        	<!--2行-->
+        	<tr class="tr1">
+        		<td rowspan="2" width="150">部门</td>
+        		<td rowspan="2" width="70">负责人</td>
+        		<td colspan="3">周报表情况</td>
+        		<td colspan="6">质询会情况</td>
+        		<td rowspan="2" width="150">周报及质询会完成率</td>
+        	</tr>
+        	<!--3行-->
+        	<tr>
+        		<td style="background:#cfe7b3" width="80">计划共计</td>
+        		<td style="background:#cfe7b3" width="80">完成</td>
+        		<td style="background:#cfe7b3" width="80">未完成</td>
+        		<td style="background:lightblue" width="80">本周完成</td>
+        		<td style="background:lightblue" width="80">完成</td>
+        		<td style="background:lightblue" width="80">未完成</td>
+        		<td style="background:lightblue" width="80">持续工作</td>
+        		<td style="background:lightblue" width="80">持续完成</td>
+        		<td style="background:lightblue" width="80">未完成</td>
+        	</tr>
+        	{*这里value相当于这一周所有部门的数据的数组*}
+        	{foreach $value as $k=>$v}
+        	{*只显示没有汇总数据的那几行*}
+			{if $k!="data"}
+        	<tr>
+        		<td>
+        			<input type="text" readonly name="{$key}[dept][]" class="dept text" value="{$v['dept']}">
+        		</td>
+                <td>
+                	<input type="text" readonly name="{$key}[name][]" class="name text" value="{$v['name']}">
+                </td>
+                <td>
+                	<input type="text" name="{$key}[gj_finished][]" class="gj_finished text" value="{$v['jihua']}">
+                </td>
+                <td>
+                	<input type="text"  name="{$key}[finished][]" class="finished text" value="{$v['finished']}">
+                </td>
+                <td>
+                	<input type="text" name="{$key}[unfinished][]" class="unfinished text" value="{$v['unfinished']}">
+                </td>
+                <td>
+                	<input type="text" name="{$key}[zxh_benzhou][]" class="zxh_benzhou text" value="{$v['zxh_benzhou']}">
+                </td>
+                <td>
+                	<input type="text" name="{$key}[zxh_wancheng][]" class="zxh_wancheng text" value="{$v['zxh_wancheng']}">
+                </td>
+                <td>
+                	<input type="text" name="{$key}[zxh_weiwancheng][]" class="zxh_weiwancheng text" value="{$v['zxh_weiwancheng']}">
+                </td>
+                <td>
+                	<input type="text" name="{$key}[zxh_chixugz][]" class="zxh_chixugz text" value="{$v['zxh_chixugz']}">
+                </td>
+                <td>
+                	<input type="text" name="{$key}[zxh_chixuwc][]" class="zxh_chixuwc text" value="{$v['zxh_chixuwc']}">
+                </td>
+                <td>
+                	<input type="text" name="{$key}[zxh_weiwancheng2][]" class="zxh_weiwancheng2 text" value="{$v['zxh_weiwancheng2']}">
+                </td>
+               	<td>
+               		<input type="text" readonly name="{$key}[zxh_wanchenglv][]" class="zxh_wanchenglv text" value="{$v['zxh_wanchenglv']}">
+               	</td>
+            </tr>
+            {/if}
+            {/foreach}
+            <!--每周总计-->
+            <tr class="total">
+            	<td colspan="2">总计</td>
+            	<td>	
+            		<input type="text" name="{$key}[total_jihua][]" readonly class="total_jihua text" value="{$value['data']['total_jihua']}">
+            	</td>
+            	<td>
+            		<input type="text" name="{$key}[total_finished][]" readonly class="total_finished text" value="{$value['data']['total_finished']}">
+            	</td>
+            	<td>
+            		<input type="text" name="{$key}[total_unfinished][]" readonly class="total_unfinished text" value="{$value['data']['total_unfinished']}">	
+            	</td>
+				<td>
+					<input type="text" name="{$key}[total_benzhou][]" readonly class="total_benzhou text" value="{$value['data']['total_benzhou']}">
+				</td>
+				<td>
+					<input type="text" name="{$key}[total_wancheng][]" readonly class="total_wancheng text" value="{$value['data']['total_wancheng']}">
+				</td>
+				<td>
+					<input type="text" name="{$key}[total_weiwancheng][]" readonly class="total_weiwancheng text" value="{$value['data']['total_weiwancheng']}">
+				</td>
+				<td>
+					<input type="text" name="{$key}[total_chixugz][]" readonly class="total_chixugz text" value="{$value['data']['total_chixugz']}">
+				</td>						
+				<td>
+					<input type="text" name="{$key}[total_chixuwc][]" readonly class="total_chixuwc text" value="{$value['data']['total_chixuwc']}">
+				</td>						
+				<td>
+					<input type="text" name="{$key}[total_weiwancheng2][]" readonly class="total_weiwancheng2 text" value="{$value['data']['total_weiwancheng2']}">
+				</td>						
+				<td>
+					<input type="text" name="{$key}[total_wanchenglv][]" readonly class="total_wanchenglv text" value="{$value['data']['total_wanchenglv']}">
+				</td>						
+            </tr>
+            <tr>
+            	<td colspan="12" class="td_save">
+            		<div>
+            			<input type="submit" value="保存本周汇总数据" class="btn btn-primary btn-block btn_save">
+            		</div>
+            	<td>
+            </tr>
+        </tbody>
+    </table>
+    <br>
+    <br>
+ 	{/if}
+    {/foreach}
+</div>
+<input type="hidden" name="year" value="{$data['year']}">
+<input type="hidden" name="month" value="{$data['month']}">
+</form>
+<!--提示框-->
+<!-- 模态框声明 -->
+<div class="modal" id="info" data-backdrop="static">
+	<!-- 窗口声明 -->
+	<div class="modal-dialog info_body">
+		<!-- 内容声明 -->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal"><span>&times;</span></button>
+				<h4 class="modal-title">提示</h4>
+			</div>
+			<!--中-->
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+						<img src="{$smarty.const.SMARTY_IMG_URL}/icon-info.gif" />
+					</div>
+					<div class="col-lg-10 col-md-10 col-sm-10 col-xs-10">
+						<span class="info"></span>
+					</div>				
+				</div>
+			</div>
+			<!--下-->
+			<div class="modal-footer">
+				<button class="btn btn-default" id="btn_sure">确定</button>
+				<button class="btn btn-default hidden" id="btn_unsure">取消</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+</body>
+</html>
+<script src="{$smarty.const.SMARTY_JS_URL}/jquery.min.js"></script>
+<script src="{$smarty.const.SMARTY_JS_URL}/bootstrap.min.js"></script>
+<script src="{$smarty.const.SMARTY_JS_URL}/zxh_public.js"></script>
+<script>
+	/*
+	 * 初始化获取服务器年月
+	 */
+	$().ready(function(){
+		date();
+	});
+	/*
+	 * 返回时间
+	 */
+	function date(){
+		var url="{$smarty.const.__CONTROLLER__}/date";
+		$.post(url,function(msg){
+			var arr_month=msg.arr_month;//月份数组
+			for(var i=1;i<arr_month.length;i++){
+				var newop=new Option(arr_month[i],i);
+				if(i=={$data['month']}){
+					newop.selected="selected";
+				}
+				$('.month')[0].options.add(newop);
+			}
+			//生成年
+			var arr_year=msg.arr_year;
+			for(var i=2016;i<=2025;i++){
+				var newop=new Option(arr_year[i],i);
+				if(i=={$data['year']}){
+					newop.selected="selected";
+				}
+				$('.year')[0].options.add(newop);
+			}
+			
+		},'json');
+	}
+	/*
+	 * 除了总计和百分比所有input失去焦点事件
+	 */
+	var selector=$('.total').find(":text"); 
+	var selector_bai=$('.zxh_wanchenglv,total_wanchenglv');
+	$(':text').not(selector).not(selector_bai).bind('blur',function(){
+		//当前行和当前table和当前tr索引号和最后个tr和当前选中列的总计
+		var $nowtable=$(this).parent().parent().parent().parent();
+		var $nowtr=$(this).parent().parent();
+		var now_index=$(this).parent().index(); 
+		var $last_tr=$nowtable.find('.total');
+		var $now_total_td=$last_tr.find('td').eq(now_index-1);
+		var $now_total_lasttd=$last_tr.find('td:last');
+		//1、完成率
+		var up=parseInt($nowtr.find('.finished').val())+parseInt($nowtr.find('.zxh_wancheng').val())+parseInt($nowtr.find('.zxh_chixuwc').val()); 
+		var down=parseInt($nowtr.find('.gj_finished').val())+parseInt($nowtr.find('.zxh_benzhou').val())+parseInt($nowtr.find('.zxh_chixugz').val());
+		var percent=Math.round((up/down)*100)+"%";
+		$nowtr.find('.zxh_wanchenglv').val(percent);
+		//2、列总计
+		var now_classname=$(this).attr('class');
+		var num=now_classname.indexOf(" ");//空格的位置
+		now_classname=now_classname.substring(0,num);
+		var str="'"+now_classname+"'";
+		//当前列除了总计以外的所有input框
+		var $now_col=$nowtable.find("."+now_classname+"");
+		var count=0;	
+		for(var i=0;i<$now_col.length;i++){			
+			count+=parseInt($now_col[i].value);
+		}
+		$now_total_td.find('input').val(count);
+		
+		//3、总计那一行的百分比
+		var total_up=parseInt($nowtable.find('.total_finished').val())+parseInt($nowtable.find('.total_wancheng').val())+parseInt($nowtable.find('.total_chixuwc').val()); 
+		var total_down=parseInt($nowtable.find('.total_jihua').val())+parseInt($nowtable.find('.total_benzhou').val())+parseInt($nowtable.find('.total_chixugz').val());
+		var total_percent=Math.round((total_up/total_down)*100)+"%";
+		$now_total_lasttd.find('input').val(total_percent);
+	});
+	
+	/*
+	 * 计算周汇总表
+	 */
+	$('#btn_count').bind('click',function(){
+		var $table=$('table').not('#tablehz');
+		var $all_dept=$table.find('.dept');
+		var arr_dept=['人力资源及行政部','采购部','仓储科','品管部','工程技术部','生产部','制造部'];
+		var arr_dept_en=['rzb','cgb','cck','pgb','gcb','scb','zzb'];
+		for(var k=0;k<arr_dept.length;k++){
+			var jhgj=0;//计划共计的
+			var zxh_benzhou=0;//本周完成的
+			var finished=0 //完成
+			var unfinished=0//未完成
+			var percent=0;
+			$all_dept.each(function(i,item){ 
+				if(item.value==arr_dept[k]){
+					//计划共计的
+					var jhgj_val=$(item).parent().parent().find('.gj_finished').val();
+					jhgj+=parseInt(jhgj_val);
+					//本周完成的
+					var zxh_benzhou_val=$(item).parent().parent().find('.zxh_benzhou').val();
+					zxh_benzhou+=parseInt(zxh_benzhou_val);
+					//完成
+					var finished_val=$(item).parent().parent().find('.finished').val();
+					finished+=parseInt(finished_val);
+					//未完成
+					var unfinished_val=parseInt($(item).parent().parent().find('.unfinished').val())
+					+parseInt($(item).parent().parent().find('.zxh_weiwancheng').val())+
+					parseInt($(item).parent().parent().find('.zxh_weiwancheng2').val());
+					unfinished+=unfinished_val;
+				}
+				//完成率
+				var percent=Math.round(finished/(jhgj+zxh_benzhou)*100)+"%";
+				//如果用户没填写信息就变为0%
+				if(percent=="NaN%"){
+					percent='0%';
+				}
+				$("#"+arr_dept_en[k]+" td:eq(2)").text(jhgj);
+				$("#"+arr_dept_en[k]+" td:eq(3)").text(zxh_benzhou);
+				$("#"+arr_dept_en[k]+" td:eq(4)").text(finished);
+				$("#"+arr_dept_en[k]+" td:eq(5)").text(unfinished);
+				$("#"+arr_dept_en[k]+" td:eq(6)").text(percent);
+			});
+		}
+		$('#M').addClass('hide');
+		$('#W').removeClass('hide');
+	});
+	
+	/*
+	 * 计算月汇总
+	 */
+	$('#btn_month_count').bind('click',function(){
+		$('#W').addClass('hide');
+		$('#M').removeClass('hide');
+		
+	});
+	
+	
+	
+	
+	
+	
+	
+	/*
+	 * 查询
+	 */
+	$('#btn_select').bind('click',function(){
+		var select_year=$('.year').val();
+		var select_month=$('.month').val();
+		var url="{$smarty.const.__CONTROLLER__}/showhztable/year/"+select_year+"/month/"+select_month;
+		window.location=url;
+	});
+	
+	/*
+	 * 清除
+	 */
+	$('#btn_del').click(function(){
+		$('#info').modal('show');
+		keep_body();
+		$('.info').html('清除本月已保存汇总数据后会由系统自动生成汇总数据,确认?');
+		$('#btn_unsure').removeClass('hidden');
+		$('#btn_unsure').click(function(){
+			$('#info').modal('hide');
+		});
+		$('#btn_sure').click(sure_del);
+		
+	});
+	
+	function sure_del(){
+		var year={$data['year']};
+		var month={$data['month']};
+		var url="{$smarty.const.__CONTROLLER__}/del_hz";
+		$.get(url,{ 'year':year,'month':month },function(msg){
+			if(msg=="true"){
+				$('#info').modal('show');
+				keep_body();
+				$('.info').html('清除成功!');
+				$('#btn_sure').unbind();
+				$('#btn_unsure').addClass('hidden');
+				$('#btn_sure').click(function(){
+					$('#info').modal('hide');
+				});
+			}else{
+				$('#info').modal('show');
+				keep_body();
+				$('.info').html('清除失败,没有保存!');
+				$('#btn_unsure').addClass('hidden');
+				$('#btn_sure').unbind();
+				$('#btn_sure').click(function(){
+				$('#info').modal('hide');
+				});
+			}
+		});	
+	}	
+	$(window).resize(keep_body);
+</script>
+
+
+
+
+
